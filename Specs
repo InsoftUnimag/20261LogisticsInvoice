@@ -16,27 +16,7 @@ o	Then El sistema registra el evento de cierre de ruta y lo deja en el sistema p
 o	Given Una ruta cerrada
 o	When Se recibe nuevamente el evento de cierre
 o	Then El sistema no debe registrar nuevamente la ruta cerrada
-________________________________________
-User Story 2 – Visualizar informe de ruta cerrada(Priority: P2)
- Como gestor de tarifa, quiero poder visualizar que una ruta fue cerrada y consultar sus datos de cierre.
-Why this priority: Permite la visualización de los datos, dando información al gestor de tarifas
-Independent Test: Se puede probar consultando una ruta previamente cerrada y validando que el estado de la ruta sea cerrado 
-Acceptance Scenarios:
-1.	Scenario: Consultar la ruta cerrada
-o	Given Ruta cerrada
-o	When El usuario, consulta los datos de la ruta 
-o	Then El sistema muestra los datos 
-________________________________________
-User Story 3 – Auditoría de cierre de ruta (Priority: P3)
-Como administrador del sistema, quiero que cada cierre de ruta quede registrado en un historial de auditoría para garantizar la trazabilidad y el control de cambios de estado.
-Why this priority:  Permite mantener la trazabilidad de las diferentes rutas que se informaron como cerradas. 
-Independent Test: Consultar el historial de auditoría de una ruta previamente cerrada y verificar que el sistema muestre correctamente su fecha y hora de cierre. 
-Acceptance Scenarios:
-1.	Scenario: Consultar historial de auditoría
-o	Given Una ruta que fue cerrada 
-o	When El administrador consulta el historial de la ruta 
-o	Then El sistema muestra todos los registros asociados a esa ruta 
-________________________________________
+_______________________________________
 
 Edge Cases
 •	What happens when se recibe un evento de cierre para una ruta inexistente?
