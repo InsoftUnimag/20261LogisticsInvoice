@@ -43,7 +43,7 @@ Measurable Outcomes
 Feature Specification: Registrar modelo de contratación 
 Created: 23/02/2026
 User Scenarios & Testing (mandatory)
-Dado por el ingreso de un modelo de contratación creado por el gestor de tarifas, el sistema debe permitir registrar la informacion del contrato y dejarlo disponible para su consulta 
+Dado el registro de un modelo de contratación creado por el gestor de tarifas, el sistema debe permitir ingresar la informacion del contrato y dejarlo disponible para su consulta 
 y gestión.
 
 User Story 1 - Registrar el contrato (Priority: P1)
@@ -76,7 +76,7 @@ o	When El usuario realiza una búsqueda por identificador o criterio válido.
 o	Then El sistema muestra la información completa del contrato. 
 2.	Scenario: Consultar contrato inexistente 
 o	Given No existe el contrato con el identificador ingresado.
-o	When El usuario realiaza la búsqueda.
+o	When El usuario realiza la búsqueda.
 o	Then El sistema informa que no se encontraron resultados.
 3.  Scenario: Filtrar contratos por estados.
 o	Given Múltiples contratos registrados con diferentes estados.
@@ -106,7 +106,7 @@ Functional Requirements
 •	FR-004: System MUST evitar registros duplicados de contratos con el mismo identificador externo.
 •	FR-005: System MUST permitir la consulta de los diferentes contratos.
 Key Entities (include if feature involves data)
-•	Contrato : Representa un contrato entre la empresa y el trasportista. (idContrato, estado, fechaCreacion, fechaCierre )
+•	Contrato : Representa un contrato entre la empresa y el trasportista. (idContrato, estado, fechaCreacion, fechaCierre, horaCierre, novedades )
 Measurable Outcomes
 •	SC-001: El 100% de los contratos son registrados correctamente en el sistema.
 •	SC-002: El sistema Evita el 100% de los registros duplicados
@@ -116,16 +116,16 @@ Measurable Outcomes
 Feature Specification: Calcular liquidación 
 Created: 23/02/2026
 User Scenarios & Testing (mandatory)
-Dado un contrato que ha finalizado o está próximo a finalizar, el sistema debe calcular automáticamente la liquidación correspondiente, considerando los valores contractuales,
+Dado un contrato  y se tiene el informe del estado del paquete que se ha creado, el sistema debe calcular automáticamente la liquidación correspondiente, considerando los valores contractuales,
 pagos realizados, penalizaciones y ajustes aplicables.
 
 User Story 1 - Calcular liquidación automaticamente (Priority: P1)
-Como gestor de contratación, quiero que el sistema calcule automáticamente la liquidación de un contrato para obtener el valor final a pagar o cobrar.
+Como gestor de tarifas, quiero que el sistema calcule automáticamente la liquidación de un contrato para obtener el valor final a pagar o cobrar.
 Why this priority: Es la funcionalidad principal del módulo. Sin el cálculo de liquidación, el módulo no cumple su propósito.
 Independent Test:  Seleccionar un contrato finalizado con pagos registrados y verificar que el sistema genere correctamente el valor de liquidación.
 Acceptance Scenarios:
 1.	Scenario: Cálculo exitoso de liquidación.
-o	Given Un contrato en estado "finalizado"
+o	Given Un contrato creado y el informe del estado del paquete
 o	When El usuario solicita el cálculo de liquidación.
 o	Then El sistema calcula el valor total contractual
 2.	Scenario: Contrato sin pagos registrados.
