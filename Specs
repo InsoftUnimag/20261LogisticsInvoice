@@ -128,10 +128,7 @@ Acceptance Scenarios:
 o	Given Un contrato creado y el informe del estado del paquete
 o	When El usuario solicita el cálculo de liquidación.
 o	Then El sistema calcula el valor total contractual
-2.	Scenario: Contrato sin pagos registrados.
-o	Given Un contrato finaliza sin pagos registrados.
-o	When Se ejecuta el calculo.
-o	Then El sistema calcula la liquidación considerando el valor total como saldo pendiente.
+
 3.  Scenario: Intentar liquidar contrato no finalizado.
 o	Given Un contrato en estado "En ejecución"
 o	When El usuario intenta calcular la liquidación. 
@@ -150,7 +147,7 @@ o	Then El sistema actualiza el valor final.
 ________________________________________
 
 Edge Cases
-•	What happens when  
+•	What happens when Rivera estuvo aquí
 •	How does system handle Debe rechazar el registro y mostrar los campos faltantes
 •	¿Qué ocurre si la fecha de finalización es anterior a la fecha de inicio?
 •	El sistema debe impedir el registro y mostrar error de validación.
