@@ -40,6 +40,44 @@ Measurable Outcomes
 •	SC-003: Se reduce a 0 los incidentes por inconsistencias de estados de rutas cerradas.
 
 
+User Story 1 – Visualizar cierre de ruta (Priority: P1)
+Como miembro del equipo de gestión de tarifas, quiero que el sistema me permita buscar una ruta especifica y visualizar la información registrada para garantizar la trazabilidad de cada ruta cerrada.
+Why this priority: Permite mantener una trazabilidad de las diferentes rutas que se informaron como cerradas previamente.
+Independent Test: Consultar a partir de una lista el historial de rutas previamente cerradas y verificar que el sistema muestre correctamente los datos del cierre de cada ruta (Fecha y hora de inicio de ruta, Fecha y hora de finalización de ruta, Paradas, Novedades).
+Acceptance Scenarios:
+1.	Scenario: Visualizar los detalles de una ruta cerrada de manera exitosa
+o	Given El registro de ruta cerrada.
+o	When Se tenga un registro de ruta cerrada almacenado en el sistema.
+o	Then El sistema permite visualizar en forma de lista los detalles de las rutas cerrada almacenadas.
+2.	Scenario: buscar un ruta especifica en la lista.
+o	Given una lista de rutas
+o	When Se recibe la ruta que se desea consultar
+o	Then El sistema debe mostrar la ruta deseada.
+3.	Scenario: buscar una ruta no existente en la lista.
+o	Given una lista de rutas
+o	When Se recibe la ruta que no exista
+o	Then El sistema debe mostrar un mensaje indicando que la ruta es inexistente dentro del registro.
+_______________________________________
+
+Edge Cases
+•	What happens when el sistema de almacenamiento no esta disponible?
+•	How does system handle Debe rechazar cualquier búsqueda y emitir un mensaje sobre el estado del sistema.
+
+Requirements (mandatory)
+Functional Requirements
+•	FR-001: System MUST Mostrar las rutas almacenadas en forma de lista organizada.
+•	FR-002: System MUST be able to buscar una ruta especifica.
+•	FR-003: Users MUST Mostrar un mensaje cuando se trate de buscar una ruta no existente
+Key Entities (include if feature involves data)
+•	Ruta : Representa una ruta operativa del sistema. (idRuta, estado, fechaCreacion, fechaCierre ).
+Success Criteria (mandatory)
+Measurable Outcomes
+•	SC-001: El 100% de los eventos válidos de cierre de ruta son registrados correctamente.
+•	SC-002: El sistema Evita el 100% de los registros duplicados
+•	SC-003: Se reduce a 0 los incidentes por inconsistencias de estados de rutas cerradas.
+
+
+
 Feature Specification: Registrar modelo de contratación 
 Created: 23/02/2026
 User Scenarios & Testing (mandatory)
@@ -202,5 +240,105 @@ Measurable Outcomes
 •	SC-001: El 100% de las actualizaciones válidas son registradas correctamente.
 •	SC-002: El sistema evita el 100% de actualizaciones duplicadas.
 •	SC-003: No existen inconsistencias entre estado actual e historial.
+
+
+Feature Specification: Visualizar liquidación
+Created: 21/02/2026
+User Scenarios & Testing (mandatory)
+Dado la visualización de un cierre de rutas, el sistema debe de enseñar de la liquidación.
+
+
+User Story 1 – Visualizar liquidación (Priority: P1)
+Como miembro de la entidad financiera ó transporador, quiero que el sistema me permita buscar una liquidación especifica, dependiendo del rol, y visualizar la información registrada para garantizar la trazabilidad de los datos financieros.
+Why this priority: Permite mantener una trazabilidad de las diferentes liquidaciones fueron previamente calculadas.
+Independent Test: Consultar a partir de una lista las liquidaciones previamente calculadas y verificar que el sistema muestre correctamente de la misma (Fecha de salida de la liquidación, monto de pago a transportista, penalidad).
+Acceptance Scenarios:
+1.	Scenario: Visualizar los detalles de una liquidación previamente calculada. 
+o	Given el calculo de la liquidación.
+o	When Se tenga una liquidación calcuada en el sistema.
+o	Then El sistema permite visualizar en forma de lista los detalles de la liquidación.
+2.	Scenario: buscar una liquidación especifica en la lista.
+o	Given una lista de liquidaciones
+o	When Se recibe la liquidación.
+o	Then El sistema debe mostrar la liquidación deseada.
+3.	Scenario: buscar una liquidación que no existente en la lista.
+o	Given una lista de liquidaciones
+o	When Se recibe la liquidación que no exista
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación es inexistente dentro del registro.
+4. Scenario: buscar una liquidación, siendo transportista, de otro transportista.
+o	Given una lista de liquidaciones.
+o	When Se pide una liquidación no perteneciente al transportista que realiza la petición.
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación es inexistente para el transportista.
+_______________________________________
+
+Edge Cases
+•	What happens when el sistema de almacenamiento no esta disponible?
+•	How does system handle Debe rechazar cualquier búsqueda y emitir un mensaje sobre el estado del sistema.
+
+Requirements (mandatory)
+Functional Requirements
+•	FR-001: System MUST Mostrar las liquidaciones almacenadas en forma de lista organizada.
+•	FR-002: System MUST be able to buscar una liquidación especifica.
+•	FR-003: Users MUST Mostrar un mensaje cuando se trate de buscar una lista no existente.
+•	FR-004: Users MUST Mostrar un mensaje cuando se trate de buscar una lista que no pertence al transportista que realiza la petición.
+Key Entities (include if feature involves data)
+•	Ruta : Representa una ruta operativa del sistema. (idLiquidación, fechaCreacion, MontodePago, Penalidad).
+Success Criteria (mandatory)
+Measurable Outcomes
+•	SC-001: El 100% de los eventos válidos de visualización de liquidación son registrados correctamente.
+•	SC-002: El sistema Evita el 100% de los registros duplicados.
+
+
+Feature Specification: Registro del estado del pago
+Created: 21/02/2026
+User Scenarios & Testing (mandatory)
+Dado el registro del estado pago, el sistema debe permitir el ingreso de la estación en la que se encuentre el pago.
+
+
+User Story 1 – Registrar estado del pago (Priority: P1)
+Como miembro de la entidad financiera , quiero que el sistema me permita registrar el estado de un pago especifico.
+Independent Test: Registrar el estado del pago, a partir de una lista de las liquidaciones previamente calculadas.
+Why this priority: Permite mantener un registro constante del pago, sobre las liquidaciones que fueron previamente calculadas.
+Acceptance Scenarios:
+1.	Scenario: Registrar el estado inicial de un pago. 
+o	Given la liquidación calculada.
+o	When Se tenga una liquidación calcuada en el sistema.
+o	Then El sistema permite registrar el estado del pago de esa liquidación.
+2.	Scenario: Registrar el estado de pago de una liquidación previamente registrada.
+o	Given una liquidación con registro de pago iniciado.
+o	When Se recibe la instrucción de registro de pago.
+o	Then El sistema debe rechazar esta intrucción.
+3.	Scenario: Actualizar el estado de pago.
+o	Given una liquidación con un registro de estado iniciado. 
+o	When Se recibe la instrucción de actualización de pago. 
+o	Then El sistema debe mostrar un mensaje indicando que la actualización fue un exito.
+4. Scenario: Actualizar el estado de pago, para un pago ya realizado.
+o	Given una liquidación que fue pagada.
+o	When Se recibe la instrucción de actualización de pago.
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación ya fue pagada y no se puede realizar una actualización.
+_______________________________________
+
+Edge Cases
+•	What happens when el sistema recibe la instrucción de registrar un estado una liquidación inexistente. 
+•	How does system handle Debe rechazar cualquier registro y mostrar un mensaje de falta de liquidación.
+• What happens when el sistema recibe la instrucción de actualización de estado sobre una liquidación paga. 
+•	How does system handle Debe rechazar cualquier actualización y mostrar un mensaje donde se diga que el pago ya fue realizado.
+
+
+Requirements (mandatory)
+Functional Requirements
+•	FR-001: System MUST Permitir el registro de estado de pago de una liquidación.
+•	FR-002: System MUST Permitir la actualización del estado de pago de una liquidación.
+•	FR-003: Users MUST Mostrar un mensaje cuando se trate de registrar un estado de pago ya existente.
+•	FR-004: Users MUST Mostrar un mensaje cuando se trate de actualizar un estado de pago para una liquidación pagada.
+Key Entities (include if feature involves data)
+•	Ruta : Representa una ruta operativa del sistema. (idPago, estado).
+Success Criteria (mandatory)
+Measurable Outcomes
+•	SC-001: El 100% de los eventos válidos de registro de pago son registrados correctamente.
+•	SC-002: El sistema Evita el 100% de los registros duplicados.
+•	SC-003: El 100% de los eventos válidos de actualización de pago son registrados correctamente.
+•	SC-004: El sistema Evita el 100% de los actualizaciones solapadas.
+
 
 
