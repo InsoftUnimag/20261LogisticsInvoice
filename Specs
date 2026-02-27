@@ -40,6 +40,11 @@ Measurable Outcomes
 •	SC-003: Se reduce a 0 los incidentes por inconsistencias de estados de rutas cerradas.
 
 
+Feature Specification: Visualizar cierre de ruta.
+Created: 21/02/2026
+User Scenarios & Testing (mandatory)
+Dado el informe de cierre de rutas, el sistema debe de permitir la visualización de los datos de este. 
+
 User Story 1 – Visualizar cierre de ruta (Priority: P1)
 Como miembro del equipo de gestión de tarifas, quiero que el sistema me permita buscar una ruta especifica y visualizar la información registrada para garantizar la trazabilidad de cada ruta cerrada.
 Why this priority: Permite mantener una trazabilidad de las diferentes rutas que se informaron como cerradas previamente.
@@ -339,6 +344,57 @@ Measurable Outcomes
 •	SC-002: El sistema Evita el 100% de los registros duplicados.
 •	SC-003: El 100% de los eventos válidos de actualización de pago son registrados correctamente.
 •	SC-004: El sistema Evita el 100% de los actualizaciones solapadas.
+
+Feature Specification: Visualizar liquidación
+Created: 21/02/2026
+User Scenarios & Testing (mandatory)
+Dado la visualización de un cierre de rutas, el sistema debe de enseñar de la liquidación.
+
+
+User Story 1 – Visualizar liquidación (Priority: P3)
+Como transporador, quiero que el sistema me permita buscar una liquidación especifica, y visualizar el estado del pago de la misma para garantizar la trazabilidad de los datos financieros.
+Independent Test: Consultar a partir de una lista las liquidaciones previamente calculadas y verificar que el sistema muestre correctamente de la misma el estado del pago.
+Acceptance Scenarios:
+1.	Scenario: Visualizar los detalles del estado de pago de una liquidación. 
+o	Given liquidación calculada.
+o	When Se tenga un registro de estado de pago para la liquidación.
+o	Then El sistema permite visualizar el estado de pago de la liquidación.
+2.	Scenario: buscar el estado de pago de una liquidación especifica en la lista.
+o	Given una lista de liquidaciones.
+o	When Se recibe la liquidación.
+o	Then El sistema debe mostrar el estado de pago de la liquidación deseada.
+3.	Scenario: buscar una liquidación que no existente en la lista.
+o	Given una lista de liquidaciones.
+o	When Se recibe la liquidación que no exista.
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación es inexistente dentro del registro.
+4. Scenario: buscar una liquidación, siendo transportista, de otro transportista.
+o	Given una lista de liquidaciones.
+o	When Se pide una liquidación no perteneciente al transportista que realiza la petición.
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación es inexistente para el transportista.
+5. Scenario: buscar una liquidación que no tiene estado de pago registrado.
+o	Given una lista de liquidaciones.
+o	When Se pide una liquidación que no tiene estado de pago registrado.
+o	Then El sistema debe mostrar un mensaje indicando que la liquidación aún no ha iniciado su proceso de pago.
+
+_______________________________________
+
+Edge Cases
+•	What happens when el sistema de almacenamiento no esta disponible?
+•	How does system handle Debe rechazar cualquier búsqueda y emitir un mensaje sobre el estado del sistema.
+
+
+Requirements (mandatory)
+Functional Requirements
+•	FR-001: System MUST Mostrar las liquidaciones con registro de estado de pago almacenadas en forma de lista organizada.
+•	FR-002: System MUST be able to buscar una liquidación con registro de estado de pagoespecifica.
+•	FR-003: Users MUST Mostrar un mensaje cuando se trate de buscar una liquidación no existente.
+•	FR-004: Users MUST Mostrar un mensaje cuando se trate de buscar una liquidación que no pertence al transportista que realiza la petición.
+Key Entities (include if feature involves data)
+•	Ruta : Representa una ruta operativa del sistema. (idLiquidación, estado).
+Success Criteria (mandatory)
+Measurable Outcomes
+•	SC-001: El 100% de los eventos válidos de visualización de estado de pago son registrados correctamente.
+•	SC-002: El sistema Evita el 100% de los registros duplicados.
 
 
 
