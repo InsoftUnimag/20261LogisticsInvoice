@@ -54,7 +54,7 @@ Acceptance Scenarios:
 o	Given El registro de ruta cerrada.
 o	When Se tenga un registro de ruta cerrada almacenado en el sistema.
 o	Then El sistema permite visualizar en forma de lista los detalles de las rutas cerrada almacenadas.
-2.	Scenario: buscar un ruta especifica en la lista.
+2.	Scenario: Buscar un ruta especifica en la lista.
 o	Given una lista de rutas
 o	When Se recibe la ruta que se desea consultar
 o	Then El sistema debe mostrar la ruta deseada.

@@ -1,109 +1,105 @@
-# Feature Specification: [FEATURE NAME]
+# Feature Specification: Registrar modelo de contratación
 
-**Created**: [DATE]  
+**Created**: 23/02/2026  
 
 ## User Scenarios & Testing *(mandatory)*
 
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-  
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
+Dado el registro de un modelo de contratación creado por el gestor de tarifas, el sistema debe permitir ingresar la informacion del contrato y dejarlo disponible para su consulta
+y gestión.
 
-### User Story 1 - [Brief Title] (Priority: P1)
+### User Story 1 - Registrar el contrato (Priority: P1)
 
-[Describe this user journey in plain language]
+Como gestor de tarifas, quiero registrar un nuevo contrato en el sistema para formalizar y controlar los procesos contractuales.
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Why this priority**:Por funcionalidad crítica, ya que sin el registro de contratos el módulo no cumple su propósito.
 
-**Independent Test**: [Describe how this can be tested independently - e.g., "Can be fully tested by [specific action] and delivers [specific value]"]
-
+**Independent Test**: Se puede probar creando un contrato con datos válidos (idContrato, tipo de contrato, nombre del conductor, Paradas, tipo de vehiculo, estadoContrato) y verificar que el sistema lo almacene correctamente y deje disponible para consulta.
 **Acceptance Scenarios**:
 
-1. **Scenario**: [Descriptive scenario name]
-   - **Given** [initial state]
-   - **When** [action]
-   - **Then** [expected outcome]
+1. **Scenario**: Registrar contrato de manera exitosa
+   - **Given** El usuario tiene permisos de gestor de tarifas.
+   - **When** Ingresa la información obligatoria (idContrato, tipo de contrato, nombre del conductor, tipo de vehiculo, Paradas, estadoContrato) del contrato.
+   - **Then** El sistema registra el contrato.
 
-2. **Scenario**: [Descriptive scenario name]
-   - **Given** [initial state]
-   - **When** [action]
-   - **Then** [expected outcome]
+2. **Scenario**: Registrar un contrato con datos incompletos
+    - **Given** Faltan campos de información del contrato.
+   - **When** El usuario intenta registrar el contrato.
+   - **Then** El sistema rechaza la operación.
+3. **Scenario**: Registro duplicado
+    - **Given** Ya existe un contrato con el mismo identificador externo
+    - **When** Se intenta registrar nuevamente.
+    - **Then** El sistema debe evitar el registro duplicado.
 
 ---
 
-### User Story 2 - [Brief Title] (Priority: P2)
+### User Story 2 - Consultar contrato (Priority: P2)
 
-[Describe this user journey in plain language]
+Como gestor de tarifas, quiero consultar los contratos registrados para revisar su informacion y estado.
 
-**Why this priority**: [Explain the value and why it has this priority level]
+**Why this priority**: Permite la visualización de los datos, facilitando el seguimiento y validación del proceso de contratación.
 
-**Independent Test**: [Describe how this can be tested independently]
+**Independent Test**: Se puede probar consultando un contrato previamente registrado y verificar que el sistema muestre correctamente
+todos sus datos.
 
 **Acceptance Scenarios**:
 
-1. **Scenario**: [Descriptive scenario name]
-   - **Given** [initial state]
-   - **When** [action]
-   - **Then** [expected outcome]
-
+1. **Scenario**: Consultar contrato existente
+   - **Given** Un contrato previamente registrado en el sistema.
+   - **When** El usuario realiza una búsqueda por identificador o criterio válido.
+   - **Then** El sistema muestra la información completa del contrato.
+2. **Scenario**: Consultar contrato inexistente 
+    - **Given** No existe el contrato con el identificador ingresado.
+    - **When** El usuario realiza la búsqueda.
+    - **Then** El sistema informa que no se encontraron resultados.
+3. **Scenario**: Filtrar contratos por estado
+    - **Given** Múltiples contratos registrados con diferentes estados.gresado.
+    - **When** El usuario aplica un filtro por estado
+    - **Then** El sistema muestra únicamente los contratos que coinciden con el criterio seleccionado.
 ---
 
-[Add more user stories as needed, each with an assigned priority]
+### User Story 3 - Notificación automática (Priority: P3)
 
+Como gestor, quiero recibir una notificación cuando un contrato cambie de estado.
+
+**Why this priority**: Permite un seguimiento de los diferentes contratos.
+
+**Independent Test**: Un contrato se completa, el sistema manda una notificación de que el contrato paso de estar vigente a completado.
+
+**Acceptance Scenarios**:
+1. **Scenario**: Notificación enviada al cambiar el estado del contrato
+    - **Given** Un contrato registrado en el sistema.
+    - **When** El cambio de estado es confirmado en el sistema.
+    - **Then** El sistema envía automaticamente una notificación al usuario configurado.
+
+
+---
 ### Edge Cases
 
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
-
-- What happens when [boundary condition]?
-- How does system handle [error scenario]?
-
+- What happens when Se registra un contrato con informacion incompleta
+- How does system handle Debe rechazar el registro y mostrar los campos faltantes.
+- What happens when la fecha de finalización es anterior a la fecha de inicio?
+- How does system handle El sistema debe impedir el registro y mostrar error de validación.
 ## Requirements *(mandatory)*
-
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
 
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-001**: System MUST registrar correctamente la información del contrato.
+- **FR-002**: System MUST Validar que el contrato tenga todos los campos  con información. 
+- **FR-003**: Users MUST be able to  consultar los datos de los diferentes contratos.
+- **FR-004**: System MUST evitar registros duplicados de contratos con el mismo identificador externo.
+- **FR-005**: System MUST permitir la consulta de los diferentes contratos.
 
-*Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+### Key Entities 
 
-### Key Entities *(include if feature involves data)*
-
-- **[Entity 1]**: [What it represents, key attributes without implementation]
-- **[Entity 2]**: [What it represents, relationships to other entities]
+- **[Contrato]**: Representa un contrato entre la empresa y el trasportista. (idContrato, estado, fechaCreacion, fechaCierre, horaCierre, novedades ) 
 
 ## Success Criteria *(mandatory)*
 
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
 
 ### Measurable Outcomes
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-001**: El 100% de los contratos son registrados correctamente en el sistema.
+- **SC-002**: El sistema Evita el 100% de los registros duplicados.
+- **SC-003**: Se reduce a 0 los incidentes por inconsistencias en los campos obligatorios del contrato.
 
