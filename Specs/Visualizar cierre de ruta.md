@@ -27,7 +27,7 @@ Como miembro del equipo de gestión de tarifas, quiero que el sistema me permita
    - **When** Se recibe la ruta que se desea consultar
    - **Then** El sistema debe mostrar la ruta deseada.
 
-3**Scenario**: Buscar una ruta no existente en la lista.
+3. **Scenario**: Buscar una ruta no existente en la lista.
     - **Given** una lista de rutas
     - **When** Se recibe la ruta que no exista
     - **Then** El sistema debe mostrar un mensaje indicando que la ruta es inexistente dentro del registro.
