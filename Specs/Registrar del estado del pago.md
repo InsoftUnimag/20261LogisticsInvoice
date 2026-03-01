@@ -4,7 +4,7 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-Dado el registro del estado pago, el sistema debe permitir el ingreso de la estación en la que se encuentre el pago.
+Dado el registro de un estado pago, el sistema debe permitir registrar y actualizar el estado del pago asociado a una liquidación previamente calculada.
 
 
 ### User Story 1 - Registrar estado del pago (Priority: P1)
@@ -14,19 +14,21 @@ Como miembro de la entidad financiera , quiero que el sistema me permita registr
 
 **Why this priority**: Permite mantener un registro constante del pago, sobre las liquidaciones que fueron previamente calculadas.
 
-**Independent Test**: A partir de una de las liquidaciones previamente calculadas, registrar el estado del pago
+**Independent Test**: A partir de una de las liquidaciones previamente calculadas, registrar el estado del pago (Pendiente, rechazado, Pagado, En proceso).
 
 **Acceptance Scenarios**:
 
 1. **Scenario**: Registrar el estado inicial de un pago.
     - **Given** Una liquidación calculada.
    - **When** Se tiene la liquidación ya calculada en el sistema.
-   - **Then** El sistema permite registrar el estado del pago de esa liquidación.
+   - **Then** el sistema registra el estado del pago y lo asocia a la liquidación correspondiente. 
 
 2. **Scenario**: Registrar el estado de pago de una liquidación previamente registrada.
    - **Given** una liquidación con registro de pago iniciado.
    - **When** Se recibe la instrucción de registro de pago.
    - **Then** El sistema debe rechazar esta intrucción.
+  
+     
 3. **Scenario**:Actualizar el estado de pago.
     - **Given** una liquidación con un registro de estado iniciado.
      - **When** Se recibe la instrucción de actualización de pago.
@@ -41,6 +43,8 @@ Como miembro de la entidad financiera , quiero que el sistema me permita registr
  - How does system handle Debe rechazar cualquier registro y mostrar un mensaje de falta de liquidación.
 - What happens when el sistema recibe la instrucción de actualización de estado sobre una liquidación paga.
 - How does system handle Debe rechazar cualquier actualización y mostrar un mensaje donde se diga que el pago ya fue realizado.
+- What happens when se intenta actualizar el estado con el mismo valor actual?
+- How does system handle Mostrar mensaje: El estado ya se encuentra actualizado.
 
 ## Requirements *(mandatory)*
 
@@ -51,11 +55,14 @@ Como miembro de la entidad financiera , quiero que el sistema me permita registr
 - **FR-001**: System MUST Permitir el registro de estado de pago de una liquidación.
 - **FR-002**: System MUST  Permitir la actualización del estado de pago de una liquidación. 
 - **FR-003**: System MUST be able to Mostrar un mensaje cuando se trate de registrar un estado de pago ya existente.
+- **FR-004**: System MUST validar que la liquidación exista antes del registro.
+- **FR-005**: System MUST impedir modificaciones cuando el pago esté finalizado.
 
 
 ### Key Entities 
 
-- **[Pago]**: Representa el pago de una liquidación. (idPago, estado, idLiquidación).
+- **[Pago]**: Representa el pago de una liquidación. (idPago, idLiquidación, idEstadoPago, usuarioRegistrado, fechaRegistrada, fechaActualizacion).
+- **[estadoPago]**: Representa el estado de un pago. (idPago, estadoPago).
 
 ## Success Criteria *(mandatory)*
 
