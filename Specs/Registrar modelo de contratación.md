@@ -14,6 +14,7 @@ Como gestor de tarifas, quiero registrar un nuevo contrato en el sistema para fo
 **Why this priority**:Por funcionalidad crítica, ya que sin el registro de contratos el módulo no cumple su propósito.
 
 **Independent Test**: Se puede probar creando un contrato con datos válidos (idContrato, tipo de contrato, nombre del conductor, Paradas, tipo de vehiculo, estadoContrato) y verificar que el sistema lo almacene correctamente y deje disponible para consulta.
+
 **Acceptance Scenarios**:
 
 1. **Scenario**: Registrar contrato de manera exitosa
