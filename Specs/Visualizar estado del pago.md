@@ -4,7 +4,8 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-Dado la visualización de un pago, sistema debe enseñar el estado del pago y los ajustes o penalizaciones dadas al pago.
+Dado un pago registrado en el sistema asociado a una liquidación, el sistema debe permitir visualizar su estado actual,
+incluyendo ajustes o penalizaciones aplicadas.
 
 ### User Story 1 - Consultar estado del pago (Priority: P1)
 
@@ -20,17 +21,24 @@ Como usuario deseo visualizar el estado actual de mi pago asociado a una liquida
    - **Given** El usuario tiene un pago registrado como aprobado
    - **When** Consulta el estado del pago
    - **Then** El sistema muestra el estado "Pagado"
+   - **And** Muestra la liquidación asociada.
 
 2. **Scenario**: Visualización de pago pendiente
    - **Given** El pago aún no ha sido procesado
    - **When** El usuario consulta el estado del pago 
    - **Then** El sistema muestra el estado "Pendiente"
 
+3. **Scenario**: Visualización de pago rechazado
+   - **Given** El pago fue rechazado
+   - **When** El usuario consulta el estado del pago
+   - **Then** El sistema muestra el estado "Rechazado"
+   - **And** muestra el motivo del rechazo.
+
 ---
 
 ### User Story 2 - Consultar detalle del pago (Priority: P2)
 
-Como usuario deseo visualizar informacion a detalle del pago, para entender valores, fechas y métodos utilizados.
+Como usuario deseo visualizar informacion detallada del pago incluyendo ajustes y penalizaciones aplicadas, para entender valores, fechas y métodos utilizados.
 
 **Why this priority**: Aporta transparencia al proceso financiero y evita reclamos por desconocimiento del monto
 
@@ -69,8 +77,8 @@ Como usuario deseo visualizar informacion a detalle del pago, para entender valo
 
 ### Key Entities *(include if feature involves data)*
 
-- **[Pago ]**: Representa la transacción economica realizada (IdPago, monton, método de pago, fecha)
-- **[Usuario]**: Persona que recibe o consulta el pago. Se relaciona con uno o varios pagos (idUser, idPago, nombre)
+- **[Pago ]**: Representa la transacción economica realizada (IdPago,idUsuario,  monton, método de pago, fecha)
+- **[Usuario]**: Persona que recibe o consulta el pago. Se relaciona con uno o varios pagos (idUser, nombre)
 - **[EstadoPago]**: Representa la condición actual del pago (IdEstadoPago, idPago, estado)
 
 ## Success Criteria *(mandatory)*
@@ -80,4 +88,4 @@ Como usuario deseo visualizar informacion a detalle del pago, para entender valo
 ### Measurable Outcomes
 
 - **SC-001**: El sistema refleja cambios en el estado del pago sin inconsistencias en el 100% de los casos.
-- **SC-002**: Al menos el 90% de los usuarios logra consultar el estado del pago sin asistencia externa.
+- **SC-002**:  El 100% de las consultas válidas muestran correctamente el estado del pago asociado.
