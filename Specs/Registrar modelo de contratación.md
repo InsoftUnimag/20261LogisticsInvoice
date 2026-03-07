@@ -13,15 +13,14 @@ Como gestor de tarifas, quiero registrar un nuevo contrato en el sistema para fo
 
 **Why this priority**:Por funcionalidad crítica, ya que sin el registro de contratos el módulo no cumple su propósito.
 
-**Independent Test**: Se puede probar creando un contrato con datos válidos (idContrato, tipo de contrato, nombre del conductor, Paradas, tipo de vehiculo, estadoContrato, fecha inicio, fecha final) y verificar que el sistema lo almacene correctamente y deje disponible para consulta.
+**Independent Test**: Se puede probar creando un contrato con datos válidos (idContrato, tipo de contrato, nombre del conductor, Precio por parada, tipo de vehiculo, fecha inicio, fecha final, Seguro Activo) y verificar que el sistema lo almacene correctamente y deje disponible para consulta.
 
 **Acceptance Scenarios**:
 
 1. **Scenario**: Registrar contrato de manera exitosa
    - **Given** El usuario tiene permisos de gestor de tarifas.
-   - **When** Ingresa la información obligatoria (idContrato, tipo de contrato, nombre del conductor, tipo de vehiculo, Paradas, estadoContrato, fecha inicio, fecha final) del contrato.
-   - **Then** El sistema registra el contrato.
-
+   - **When** Ingresa la información obligatoria (idContrato, tipo de contrato, nombre del conductor, tipo de vehículo, Precio por parada, fecha inicio, fecha final, Seguro Activo) del contrato.
+   - **Then** El sistema guarda un modelo de contratación.
 2. **Scenario**: Registrar un contrato con datos incompletos
     - **Given** Faltan campos de información del contrato.
    - **When** El usuario intenta registrar el contrato.
@@ -33,7 +32,7 @@ Como gestor de tarifas, quiero registrar un nuevo contrato en el sistema para fo
 
 ---
 
-### User Story 2 - Consultar contrato (Priority: P2)
+### User Story 2 - Consultar contrato (Priority: P3)
 
 Como gestor de tarifas, quiero consultar los contratos registrados para revisar su informacion y estado.
 
@@ -52,10 +51,7 @@ todos sus datos.
     - **Given** No existe el contrato con el identificador ingresado.
     - **When** El usuario realiza la búsqueda.
     - **Then** El sistema informa que no se encontraron resultados.
-3. **Scenario**: Filtrar contratos por estado
-    - **Given** Múltiples contratos registrados con diferentes estados.gresado.
-    - **When** El usuario aplica un filtro por estado
-    - **Then** El sistema muestra únicamente los contratos que coinciden con el criterio seleccionado.
+
 ---
 
 ### User Story 3 - Notificación automática (Priority: P3)
