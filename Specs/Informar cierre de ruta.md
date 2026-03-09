@@ -38,7 +38,6 @@ Como módulo de gestión de rutas, quiero que el sistema registre automáticamen
 {
   "tipo_evento": "RUTA_CERRADA",
   "ruta_id": "UUID",
-  "tipo_cierre": "MANUAL | AUTOMATICO | FORZADO_DESPACHADOR",
   "fecha_hora_inicio_transito": "2026-03-06T07:45:00",
   "fecha_hora_cierre": "2026-03-06T18:00:00",
   "conductor": {
@@ -55,15 +54,7 @@ Como módulo de gestión de rutas, quiero que el sistema registre automáticamen
     "fallidas_culpa_cliente": 2,
     "fallidas_culpa_conductor": 1,
     "novedades_graves": 1
-  },
-  "paradas": [
-    {
-      "paquete_id": "UUID",
-      "estado_final": "ENTREGADO | FALLIDO | NOVEDAD | SIN_GESTION_CONDUCTOR",
-      "motivo_novedad": "string | null",
-      "fecha_hora_gestion": "2026-03-06T10:15:00 | null"
-    }
-  ]
+  }
 }
 ```
 ---
@@ -91,8 +82,7 @@ Como módulo de gestión de rutas, quiero que el sistema registre automáticamen
 
 ### Key Entities 
 
-- **[Ruta]**: Representa una ruta operativa del sistema. (idRuta, estado, fechaInicioTransito, fechaCierre, idTransportista)
-- **[EventoCierreRuta]**: Representa el evento recibido desde el módulo externo. (idEventoCierre, idRuta, fechaEvento)
+- **[Ruta]**: Representa una ruta operativa del sistema. (idRuta, fechaInicioTransito, fechaCierre, idTransportista)
 - **[Parada]**:  Representa los diferentes puntos donde se para el vehiculo para entregar un paquete. (idParada, idRuta, EstadoFinal, Novedad)
 - **[transportista]:** Representa el transportista que realiza la ruta. (idTransportista, nombre)
 - **[Vehiculo]:** Representa el transportista que realiza la ruta. (idVehiculo, tipoVehiculo) 
