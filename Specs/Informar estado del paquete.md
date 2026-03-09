@@ -1,4 +1,4 @@
-# Feature Specification: Informar estado del paquete
+# Feature Specification: Gestionar novedad del paquete
 
 **Created**: 23/02/2026  
 
