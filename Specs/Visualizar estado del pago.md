@@ -42,14 +42,14 @@ Como usuario deseo visualizar información detallada del pago incluyendo ajustes
 
 **Why this priority**: Aporta transparencia al proceso financiero y evita reclamos por desconocimiento del monto
 
-**Independent Test**: Puede probarse seleccionando un pago específico y verificando que el sistema despliegue toda la información relacionada al mismo(IdPago,  MontoBase, fecha, tipoAjustes, MontoNeto, idRuta).
+**Independent Test**: Puede probarse seleccionando un pago específico y verificando que el sistema despliegue toda la información relacionada al mismo(IdPago, MontoBase, fecha, tipoAjustes, MontoNeto, idRuta, idLiquidación).
 
 **Acceptance Scenarios**:
 
 1. **Scenario**: Visualización del detalle del pago
    - **Given** Existe un pago asociado al usuario
    - **When** Consulta los detalles del pago.
-   - **Then** el sistema muestra MontoBase,MontoNeto, fecha, Ajustes/penalidades y estado del pago
+   - **Then** el sistema muestra MontoBase, MontoNeto, fecha, Ajustes/penalidades y estado del pago
 1. **Scenario**: Descargar la factura del detalle del pago
     - **Given** Existe un pago asociado al usuario
     - **When** Descarga la factura.
@@ -81,9 +81,9 @@ Como usuario deseo visualizar información detallada del pago incluyendo ajustes
 
 ### Key Entities *(include if feature involves data)*
 
-- **[Pago ]**: Representa la transacción económica realizada (IdPago,idUsuario, MontoBasae, fecha, IdPenalidad, MontoNeto)
+- **[Pago]**: Representa la transacción económica realizada (IdPago, idUsuario, MontoBase, fecha, IdPenalidad, MontoNeto, idliquidación)
 - **[Ajustes/Penalidad]**:Representa los ajustes financiaros que puede sufrir un transportista (IdAjustes, TipoAjustes)
-- **[Usuario]**: Persona que recibe o consulta el pago. Se relaciona con uno o varios pagos (idUser, nombre,TotalPagado,PagosPendientes)
+- **[Usuario]**: Persona que recibe o consulta el pago. Se relaciona con uno o varios pagos (idUser, nombre, TotalPagado, PagosPendientes)
 - **[EstadoPago]**: Representa la condición actual del pago (IdEstadoPago, idPago, estado)
 - **[Ruta]**:Representa la ruta que será pagada al transportista (IdRuta).
 - **[Contrato]**:Representa el modelo de contratación asociado a la ruta(IdContrato, Tipo de contrato).

@@ -4,12 +4,12 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-Dado el registro de un estado pago, el sistema debe permitir registrar y actualizar el estado del pago asociado a una liquidación previamente calculada.
+Dado el registro de un estado pago (IdEstadoPago, idPago, estado), el sistema debe permitir registrar y actualizar el estado del pago asociado a una liquidación previamente calculada (IdPago, idUsuario, MontoBase, fecha, IdPenalidad, MontoNeto).
 
 
 ### User Story 1 - Registrar estado del pago (Priority: P1)
 
-Como miembro de la entidad financiera , quiero que el sistema me permita registrar el estado de un pago especifico.
+Como miembro de la entidad financiera, quiero que el sistema me permita registrar el estado de un pago especifíco.
 
 
 **Why this priority**: Permite mantener un registro constante del pago, sobre las liquidaciones que fueron previamente calculadas.
@@ -53,7 +53,7 @@ Como miembro de la entidad financiera , quiero que el sistema me permita registr
 ### Functional Requirements
 
 - **FR-001**: System MUST Permitir el registro de estado de pago de una liquidación.
-- **FR-002**: System MUST  Permitir la actualización del estado de pago de una liquidación. 
+- **FR-002**: System MUST Permitir la actualización del estado de pago de una liquidación. 
 - **FR-003**: System MUST be able to Mostrar un mensaje cuando se trate de registrar un estado de pago ya existente.
 - **FR-004**: System MUST validar que la liquidación exista antes del registro.
 - **FR-005**: System MUST impedir modificaciones cuando el pago esté finalizado.
@@ -61,9 +61,9 @@ Como miembro de la entidad financiera , quiero que el sistema me permita registr
 
 ### Key Entities 
 
-- **[Pago]**: Representa el pago de una liquidación. (idPago, idLiquidación, idEstadoPago, usuarioRegistrado, fechaRegistrada, fechaActualizacion).
-- **[estadoPago]**: Representa el estado de un pago. (idPago, estadoPago).
-
+- **[Pago]**: Representa la transacción económica realizada (IdPago, idUsuario, MontoBase, fecha, IdPenalidad, MontoNeto, idLiquidación)
+- **[Ajustes/Penalidad]**:Representa los ajustes financiaros que puede sufrir un transportista (IdAjustes, TipoAjustes)
+- **[EstadoPago]**: Representa la condición actual del pago (IdEstadoPago, idPago, estado)
 ## Success Criteria *(mandatory)*
 
 
