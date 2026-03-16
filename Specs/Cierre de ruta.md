@@ -27,6 +27,14 @@ Como Módulo Financiero, quiero recibir el resumen detallado de la ruta (vehícu
    - **Given** Una parada marcada como "FALLIDA".
    - **When** El evento incluye el `motivo_falla`.
    - **Then** El sistema financiero determina si la falla es por el cliente o el trasportista.
+  
+ #### Clasificación de Fallos en Entrega (Novedades)
+
+| Tipo de Fallo | Responsable | Ejemplos Comunes |
+| :--- | :--- | :--- |
+| **Fallo por el Cliente** | Destinatario / Cliente final | Dirección incorrecta o incompleta, cliente ausente en el domicilio, rechaza recibir el paquete, local cerrado. |
+| **Fallo por el Transportador** | Repartidor / Conductor | Paquete dañado por mal manejo, no visitó la dirección reportada, pérdida del paquete, retraso injustificado. |
+| **Fuerza Mayor / Operativo** | Factores externos o la Empresa | Cierre de vías (paros/accidentes), clima extremo, falla mecánica grave, error de etiquetado o despacho desde bodega. |
 
 ### Evento asíncrono con el modulo de rutas y flotas:
 **Tipo:** Evento asíncrono (sin respuesta esperada)  
