@@ -10,12 +10,19 @@ Este módulo proporciona la interfaz de consulta y trazabilidad para las liquida
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
+
 **Primary Dependencies**: Spring Boot (Web, Data JPA, Security), Axios, React Table (o similar para DataGrids)
+
 **Storage**: PostgreSQL 15
+
 **Testing**: JUnit 5, Mockito, Spring Security Test / Jest, React Testing Library
+
 **Target Platform**: AWS
+
 **Project Type**: Web application (Backend API + Frontend Dashboard)
+
 **Performance Goals**: Búsquedas y filtrados de liquidaciones en < 300ms.
+
 **Constraints**: Control de acceso estricto basado en roles (ROLE_FINANCE vs ROLE_DRIVER). Paginación obligatoria en el servidor para evitar sobrecarga de memoria al consultar el historial.
 
 ## Project Structure

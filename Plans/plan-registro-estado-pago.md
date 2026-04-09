@@ -10,12 +10,19 @@ Este plan detalla la construcción del módulo de conciliación bancaria asíncr
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
+
 **Primary Dependencies**: Spring Boot (Web, Data JPA, Spring State Machine - opcional pero recomendado), PostgreSQL Driver, Axios
+
 **Storage**: PostgreSQL 15
+
 **Testing**: JUnit 5, Mockito, Testcontainers / Jest
+
 **Target Platform**: AWS (API Gateway -> SQS/Webhook -> Spring Boot)
+
 **Project Type**: Web application (Backend Webhook/Consumer + Frontend Dashboard)
+
 **Performance Goals**: Responder al banco con 202 Accepted en < 200ms; procesar el evento final en < 120s.
+
 **Constraints**: Garantizar idempotencia estricta mediante el ID de transacción bancaria. Bloquear transiciones inválidas (ej. de "Pagado" a "En proceso").
 
 ## Project Structure

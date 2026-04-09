@@ -10,12 +10,19 @@ Este módulo es el núcleo administrativo del sistema de tarifas. Permite la cre
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
+
 **Primary Dependencies**: Spring Boot (Web, Data JPA, Validation), PostgreSQL Driver, Axios
+
 **Storage**: PostgreSQL 15
+
 **Testing**: JUnit 5, Mockito, Spring Boot Test / Jest, React Testing Library
+
 **Target Platform**: AWS
+
 **Project Type**: Web application (Backend API + Frontend Dashboard)
+
 **Performance Goals**: Consultas de contratos en < 200ms; inserciones con validación en < 300ms.
+
 **Constraints**: Restricciones UNIQUE en la base de datos para identificadores externos (FR-004). Validación estricta a nivel de API para campos obligatorios y coherencia de fechas (Fecha Final > Fecha Inicio).
 
 ## Project Structure

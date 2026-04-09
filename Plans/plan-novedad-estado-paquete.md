@@ -10,12 +10,19 @@ Esta funcionalidad establece la integración sincrónica entre el Módulo Financ
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
+
 **Primary Dependencies**: Spring Boot (Web, Data JPA), Spring Cloud OpenFeign o WebClient (para peticiones HTTP), Resilience4j (para Timeouts y Retries), Axios (Frontend)
+
 **Storage**: PostgreSQL 15
+
 **Testing**: JUnit 5, WireMock (para simular el API externa), Mockito / Jest
+
 **Target Platform**: AWS
+
 **Project Type**: Web application (Integración de Microservicios)
+
 **Performance Goals**: 95% de las peticiones completadas en < 500ms
+
 **Constraints**: Timeout estricto de 2 segundos con política de reintentos antes de marcar como "Pendiente por Sincronización". Registro obligatorio de respuestas HTTP distintas a 200 OK.
 
 ## Project Structure

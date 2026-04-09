@@ -10,12 +10,19 @@ El objetivo de esta funcionalidad es que el Módulo Financiero procese de forma 
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
+
 **Primary Dependencies**: Spring Boot, Spring Cloud AWS (SQS) / Spring Kafka (para eventos asíncronos), PostgreSQL Driver, Axios
+
 **Storage**: PostgreSQL 15
+
 **Testing**: JUnit 5, Mockito, Testcontainers (para simular colas de mensajes) / Jest
+
 **Target Platform**: AWS (EC2/ECS, y AWS SQS/EventBridge para la mensajería)
+
 **Project Type**: Web application (Backend Consumer + Frontend Dashboard)
+
 **Performance Goals**: Procesar y guardar el evento en base de datos en < 5 segundos.
+
 **Constraints**: Garantizar idempotencia (ignorar eventos duplicados usando ruta_id) y clasificar correctamente los motivos de falla financiera.
 
 ## Project Structure
