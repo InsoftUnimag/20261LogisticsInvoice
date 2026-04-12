@@ -5,34 +5,33 @@
 
 ## Summary
 
-El objetivo de esta funcionalidad es automatizar el cálculo de las liquidaciones de los transportistas basándose en el cierre de rutas, el estado final de los paquetes y los modelos de contratación definidos. El sistema debe procesar datos de rutas finalizadas, aplicar tarifas, gestionar penalizaciones y permitir recálculos si existen ajustes posteriores, garantizando siempre la trazabilidad mediante auditorías.
+El objetivo de esta funcionalidad es automatizar completamente el cálculo de las liquidaciones de los transportistas. El sistema actúa de forma autónoma: en cuanto recibe el evento de cierre de ruta desde el Módulo de Rutas y Flotas y consulta el estado final de los paquetes, calcula la liquidación sin intervención de ningún usuario, aplicando las reglas del modelo de contratación, las tarifas definidas y las penalizaciones correspondientes.
+
+Existe un flujo secundario de recálculo, que ocurre únicamente cuando un conductor solicita formalmente una revisión de su liquidación y esa solicitud es aceptada por un administrador. En ese caso, el administrador ingresa los nuevos ajustes manualmente y el sistema recalcula el valor final de forma automática, dejando siempre trazabilidad completa mediante auditoría.
 
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
 
-**Primary Dependencies**: Spring Boot, PostgreSQL Driver, Axios
+**Primary Dependencies**: Spring Boot (Web, Data JPA, Flyway, Validation, Security), PostgreSQL Driver, Axios
 
 **Storage**: PostgreSQL 15
 
-
-**Testing**: JUnit 5, Mockito / Jest
+**Testing**: JUnit 5, Mockito / Jest, React Testing Library
 
 **Target Platform**: AWS
 
-**Project Type**: Web application
+**Data Integrity**: Uso de `BigDecimal` para todos los cálculos monetarios.
 
-**Data Integrity**: Uso de BigDecimal para todos los cálculos monetarios.
-
-**Scheme Management**: Flyway para migraciones de PostgreSQL
+**Schema Management**: Flyway para migraciones de PostgreSQL.
 
 **Security**: Spring Security + JWT para protección de endpoints financieros.
 
-**API Pattern**: Implementacion de DTOs para desacoplar la base de datos de la capa de presentación.
+**API Pattern**: DTOs para desacoplar la base de datos de la capa de presentación.
 
-**Performance Goals**: Procesamiento del cálculo en el servidor < 300ms
+**Performance Goals**: Procesamiento del cálculo en el servidor en menos de 300ms.
 
-**Constraints**: Consistencia transaccional ACID, gestión segura de variables de entorno para la nube, y prevención de duplicados.
+**Constraints**: Consistencia transaccional ACID, restricción UNIQUE en base de datos para prevenir liquidaciones duplicadas por ruta, gestión segura de variables de entorno para la nube.
 
 **Scale/Scope**: Preparado para escalar horizontalmente en la nube gestionando miles de cierres de ruta.
 
@@ -42,8 +41,8 @@ El objetivo de esta funcionalidad es automatizar el cálculo de las liquidacione
 
 ```text
 specs/calcular-liquidacion/
-├── plan.md              # Este archivo 
-└── spec.md             # Especificación: Calcular liquidación.md
+├── plan.md              # Este archivo
+└── spec.md              # Especificación: Calcular liquidación.md
 ```
 
 ### Source Code (repository root)
@@ -51,107 +50,187 @@ specs/calcular-liquidacion/
 ```text
 backend/
 ├── src/main/java/com/logistica/
-│   ├── config/          # Configuraciones 
-│   ├── controllers/     # Endpoints REST API
-│   ├── models/          # Entidades JPA 
-│   ├── repositories/    # Interfaces Spring Data JPA
-│   └── services/        # Lógica de cálculo y reglas de negocio
-├── Dockerfile           # Instrucciones para empaquetar en AWS
+│
+│   ├── application/                 # Casos de uso (lo que hace el sistema)
+│   │   ├── usecases/
+│   │   │   ├── liquidacion/
+│   │   │   │   ├── CalcularLiquidacionUseCase.java
+│   │   │   │   ├── RecalcularLiquidacionUseCase.java
+│   │   │   │   └── CerrarRutaUseCase.java
+│   │   │
+│   │   └── dtos/                    # DTOs de entrada/salida
+│   │       ├── request/
+│   │       └── response/
+│
+│   ├── domain/                      # Núcleo del negocio (LO MÁS IMPORTANTE)
+│   │   ├── models/                  # Entidades de negocio (sin JPA si quieres pureza)
+│   │   │   ├── Liquidacion.java
+│   │   │   ├── Ajuste.java
+│   │   │   └── AuditoriaLiquidacion.java
+│   │   │
+│   │   ├── exceptions/              # Excepciones de negocio
+│   │   │   ├── ContratoNotFoundException.java
+│   │   │   └── LiquidacionDuplicadaException.java
+│   │   │
+│   │   ├── repositories/            # Interfaces (puertos)
+│   │   │   ├── LiquidacionRepository.java
+│   │   │   └── AjusteRepository.java
+│   │   │
+│   │   └── strategies/              # Reglas de negocio (core)
+│   │       ├── LiquidacionStrategy.java
+│   │       ├── PorParadaStrategy.java
+│   │       └── RecorridoCompletoStrategy.java
+│
+│   ├── infrastructure/              # Implementaciones técnicas
+│   │   ├── persistence/
+│   │   │   ├── entities/            # Entidades JPA (separadas del dominio)
+│   │   │   ├── repositories/        # Spring Data JPA
+│   │   │
+│   │   ├── web/
+│   │   │   ├── controllers/         # REST controllers
+│   │   │   └── handlers/            # Manejo global de errores
+│   │   │
+│   │   ├── config/                  # Seguridad, CORS, etc
+│   │   └── adapters/                # Mappers (DTO ↔ dominio)
+│
+│   └── shared/                      # Utilidades comunes
+│       ├── utils/
+│       └── constants/
+│
+├── src/main/resources/
+│   ├── db/migration/
+│   │   └── V1__init_schema.sql
+│   └── application.yml
+│
+├── Dockerfile
 └── pom.xml / build.gradle
 
 frontend/
 ├── src/
-│   ├── components/      # UI: Tablas, modales y botones en React
-│   ├── services/        # Peticiones Axios hacia la API de Spring Boot
-│   └── pages/           # Vistas principales
-├── Dockerfile           
+│
+│   ├── app/                        # Configuración global (router, store)
+│
+│   ├── modules/                    # Feature-based structure
+│   │   ├── liquidacion/
+│   │   │   ├── components/
+│   │   │   ├── pages/
+│   │   │   ├── services/
+│   │   │   └── hooks/
+│   │
+│   │   └── ajustes/
+│   │       ├── components/
+│   │       ├── pages/
+│   │       └── services/
+│
+│   ├── shared/                     # Reutilizable
+│   │   ├── components/             # Botones, inputs, modales genéricos
+│   │   ├── services/               # Axios config
+│   │   └── utils/
+│
+│   ├── assets/
+│   └── styles/
+│
+├── Dockerfile
 └── package.json
 ```
 
-**Structure Decision**: Se utiliza una estructura completamente desacoplada con archivos de configuración para contenedores, lo cual es el estándar de la industria para despliegues en AWS.
+**Structure Decision**: Se utiliza una arquitectura desacoplada con el patrón Strategy para el motor de cálculo, separando la lógica de cada tipo de contrato en clases independientes. Esto facilita agregar nuevos modelos de contratación en el futuro sin modificar el servicio principal.
 
 ---
 
 ## Phase 1: Setup & DevOps Foundation (Shared Infrastructure)
 
-**Purpose**: Configuración inicial y preparación para la nube.
+**Purpose**: Configuración inicial del proyecto y preparación del entorno de desarrollo y despliegue.
 
-- [ ] T001 Inicializar Spring Boot(Web, JPA, Flyway, Validation, Security)y el driver de PostgreSQL.
-- [ ] T002 Inicializar React con Vite y configurara Axios Interceptors para manejo de errores globales.
+- [ ] T001 Inicializar Spring Boot con dependencias: Web, Data JPA, Flyway, Validation, Security y el driver de PostgreSQL.
+- [ ] T002 Inicializar React con Vite y configurar Axios Interceptors para manejo global de errores HTTP.
 - [ ] T003 Crear Docker Compose para entorno local (App + DB) y configurar Dockerfiles para AWS.
-- [ ] T004 Definir el esquema inicial en un script de Flyway (V1__init_schema.sql).
+- [ ] T004 Definir el esquema inicial en el script de Flyway `V1__init_schema.sql`, incluyendo todas las tablas del módulo (`liquidaciones`, `ajustes`, `auditoria_liquidacion`) y sus restricciones. En particular, agregar una restricción `UNIQUE(id_ruta)` en la tabla `liquidaciones` para garantizar a nivel de base de datos que no existan liquidaciones duplicadas por ruta.
 
 ---
 
 ## Phase 2: Foundational & Data Integrity (Blocking Prerequisites)
 
-**Purpose**: Esquema de datos, conectividad y seguridad de comunicación.
+**Purpose**: Definir el esquema de datos, las entidades, la auditoría y la seguridad de comunicación. Esta fase debe completarse antes de implementar cualquier lógica de negocio.
 
-- [ ] T005 Configurar CORS y un SecurityConfig basico (permitir/restringir rutas según roles) para permitir que el frontend de React se comunique con la API.
-- [ ] T006 Crear las entidades JPA y sus respectivos DTOs para Contrato, Ruta, Liquidacion y Penalizacion mapeando a las tablas de PostgreSQL.
-- [ ] T007 Implementar los JpaRepository para cada entidad.
-- [ ] T008 Implementar un @RestControllerAdvice para capturar errores de base de datos y validaciones, retornando JSONs limpios a React.
-- [ ] T009 Configurar un GlobalExceptionHandler que capture errores de validacion o EntityNotFoundException y devuelva mensajes legibles.
-- 
-**Checkpoint**: Backend expone rutas y se conecta a PostgreSQL mediante variables de entorno; el frontend puede hacer llamadas básicas sin errores de CORS.
+- [ ] T005 Configurar CORS y un `SecurityConfig` básico con roles definidos (`ROLE_ADMIN`, `ROLE_TRANSPORTISTA`) para proteger los endpoints financieros mediante JWT.
+- [ ] T006 Crear las entidades JPA y sus DTOs correspondientes:
+    - `Contrato` → `ContratoDTO`
+    - `Ruta` → `RutaDTO`
+    - `Liquidacion` → `LiquidacionResponseDTO`
+    - `Ajuste` → `AjusteDTO`
+    - `AuditoriaLiquidacion` → `AuditoriaDTO` *(debe crearse aquí, ya que el primer cálculo también genera un registro de auditoría, no solo el recálculo)*
+- [ ] T007 Implementar los `JpaRepository` para cada entidad, incluyendo el método `existsByIdRuta(UUID idRuta)` en `LiquidacionRepository` para la validación de duplicados en la capa de servicio.
+- [ ] T008 Implementar un `@RestControllerAdvice` global que capture excepciones de negocio (`ContratoNotFoundException`, `LiquidacionDuplicadaException`, `SolicitudRevisionNoAceptadaException`) y errores de base de datos, retornando respuestas JSON estructuradas con código HTTP apropiado.
 
----
-
-## Phase 3: User Story 1 - Calcular liquidación automáticamente (Priority: P1)
-
-**Goal**: Ejecutar el moyos de cálculo con precision monetaria y validación de estado de la liquidación basado en la información de la ruta.
-
-**Independent Test**: Lanzar el backend y enviar un POST con Postman o URL simulando a React. Verificar el cálculo y la inserción en PostgreSQL.
-
-### Tests for User Story 1
-
-- [ ] T010 [P] [US1] JUnit 5 test para validar que CalculationService aplique el calculo correcto según el modelo de contratación.
-- [ ] T011 [P] [US1] Test de integración con @DataJpaTest para confirmar la restricción de liquidaciones duplicadas.
-
-### Implementation for User Story 1
-
-- [ ] T012 [P] [US1] Implementar el motor de   cálculo y penalizaciones base en CalculationService.java. Utilizar el patrón Strategy por tipo de contrato.
-- [ ] T013 [US1] Asegurar que el método de creación de liquidación sea @transactional para evitar estados incosistentes
-- [ ] T014 [US1] Crear el controlador REST POST /api/liquidaciones/calcular.
-- [ ] T015 [US1] Desarrollar el servicio en React con Axios para invocar el endpoint de cálculo.
-- [ ] T016 [US1] Crear el componente visual en React que muestre el resumen del cálculo exitoso al usuario.
+**Checkpoint**: El backend se conecta a PostgreSQL mediante variables de entorno, el esquema está creado con todas sus restricciones, y el frontend puede hacer llamadas básicas sin errores de CORS.
 
 ---
 
-## Phase 4: User Story 2 - Recalcular liquidación (Priority: P2)
+## Phase 3: User Story 1 — Calcular liquidación automáticamente (Prioridad: P1)
 
-**Goal**: Permitir agregar nuevos ajustes sobre un cálculo existente manteniendo la trazabilidad.
+**Goal**: Implementar el motor de cálculo automático que se activa al recibir el evento de cierre de ruta, sin intervención de ningún usuario. React no dispara este cálculo; solo consume el resultado para mostrarlo.
 
-**Independent Test**: Modificar penalizaciones desde la UI de React, pulsar recalcular, y confirmar en la base de datos que el registro de auditoría fue creado en PostgreSQL.
+**Independent Test**: Simular el envío del evento de cierre de ruta mediante Postman al endpoint `POST /api/eventos/cierre-ruta` con un payload válido. Verificar que se genera correctamente el registro de liquidación en PostgreSQL con el valor esperado y que se crea el registro de auditoría correspondiente, sin ninguna acción adicional del usuario.
 
-### Tests for User Story 2
+### Tests para User Story 1
 
-- [ ] T017 [P] [US2] Test unitario para verificar que al actualizar una liquidación, el registro previo se guarde íntegro en la tabla de auditoría.
-- [ ] T018 [US2] Test de componente en React para confirmar que la vista de liquidación se actualiza sin recargar la página completa.
+- [ ] T009 [P] [US1] Test unitario en JUnit 5 para `PorParadaStrategy`: verificar que el cálculo aplica correctamente los porcentajes según el estado de cada parada (exitosa al 100%, fallida por cliente al porcentaje configurado, fallida por transportista al 0%).
+- [ ] T010 [P] [US1] Test unitario en JUnit 5 para `RecorridoCompletoStrategy`: verificar que se asigna el valor fijo del contrato cuando la ruta cumple los criterios de completitud.
+- [ ] T011 [P] [US1] Test de integración con `@DataJpaTest` para confirmar que la restricción de duplicados lanza `LiquidacionDuplicadaException` cuando se intenta calcular una segunda liquidación para la misma ruta.
+- [ ] T012 [P] [US1] Test para el edge case: el contrato referenciado en el evento no existe → el sistema lanza `ContratoNotFoundException` y no genera ningún registro de liquidación.
+- [ ] T013 [P] [US1] Test para el edge case: la fecha de cierre de la ruta es anterior a la fecha de inicio → el sistema rechaza el evento y registra el error en los logs sin crear liquidación.
+- [ ] T014 [P] [US1] Test para el edge case: un paquete no tiene regla de pago aplicable → el sistema omite ese paquete, continúa con los demás y registra el paquete como "sin regla aplicable".
 
-### Implementation for User Story 2
+### Implementation para User Story 1
 
-- [ ] T019 [P] [US2] Crear la entidad JPA AuditoriaLiquidacion para cumplir con el FR-003.
-- [ ] T020 [US2] Implementar el método de actualización en CalculationService y registrar la auditoría.
-- [ ] T021 [US2] Crear el controlador PUT /api/liquidaciones/{id}/recalcular.
-- [ ] T022 [US2] Desarrollar un formulario en React para ajustes manuales con campos de "Motivo del ajuste" (obligatorio para la auditoría).
+- [ ] T015 [P] [US1] Implementar la interfaz `ContratoStrategy` con el método `calcular(Ruta ruta, Contrato contrato): BigDecimal` y sus dos implementaciones:
+    - `PorParadaStrategy`: itera las paradas, aplica el porcentaje de pago según el responsable de la falla y multiplica por la tarifa por parada.
+    - `RecorridoCompletoStrategy`: verifica el cumplimiento de la ruta y retorna el valor fijo pactado en el contrato.
+- [ ] T016 [P] [US1] Implementar `CalculationService.java` con el método principal `calcularLiquidacion(CierreRutaEventDTO evento)`, que: valida que no exista liquidación duplicada para esa ruta, selecciona la estrategia correcta según el tipo de contrato, aplica ajustes y penalizaciones al subtotal, persiste la liquidación y registra la operación en `AuditoriaLiquidacion`.
+- [ ] T017 [P] [US1] Marcar el método de creación de liquidación con `@Transactional` para garantizar que el guardado de la liquidación y el registro de auditoría ocurran de forma atómica. Si cualquiera de los dos falla, ambos se revierten.
+- [ ] T018 [US1] Crear el endpoint `POST /api/eventos/cierre-ruta` en `EventoController.java`, que recibe el evento del Módulo de Rutas y Flotas e invoca `CalculationService`. Este endpoint **no es llamado por React**; es invocado por el sistema externo de rutas.
+- [ ] T019 [US1] Crear en React la vista de resultado de liquidación, que consulta mediante `GET /api/liquidaciones/{id}` el registro ya calculado y lo muestra al usuario. React únicamente lee el resultado; no dispara el cálculo.
+
+---
+
+## Phase 4: User Story 2 — Recalcular liquidación (Prioridad: P2)
+
+**Goal**: Permitir al administrador ingresar nuevos ajustes sobre una liquidación existente y ordenar el recálculo, pero únicamente cuando exista una solicitud de revisión aceptada para esa liquidación. El sistema debe validar ese estado antes de permitir cualquier acción.
+
+**Independent Test**: Desde la UI de React, como administrador, intentar acceder al panel de recálculo de una liquidación sin solicitud aceptada y verificar que el sistema lo bloquea. Luego, con una solicitud aceptada, ingresar un ajuste con motivo obligatorio, presionar "Recalcular" y confirmar en PostgreSQL que el valor de la liquidación fue actualizado y que se creó un nuevo registro en `auditoria_liquidacion` con el valor anterior, el valor nuevo y el responsable.
+
+### Tests para User Story 2
+
+- [ ] T020 [P] [US2] Test unitario para verificar que `CalculationService.recalcular()` lanza `SolicitudRevisionNoAceptadaException` cuando no existe una solicitud de revisión aceptada para la liquidación, impidiendo el recálculo.
+- [ ] T021 [P] [US2] Test unitario para verificar que al ejecutar el recálculo exitoso, el registro previo de la liquidación (valor anterior) queda íntegro en `auditoria_liquidacion` junto con el valor nuevo, la fecha y el responsable.
+- [ ] T022 [US2] Test de componente en React para confirmar que el formulario de ajustes no se muestra si no hay solicitud de revisión aceptada, y que el campo "Motivo del ajuste" es obligatorio antes de habilitar el botón "Recalcular".
+
+### Implementation para User Story 2
+
+- [ ] T023 [P] [US2] Implementar en `CalculationService.java` el método `recalcularLiquidacion(UUID idLiquidacion, List<AjusteDTO> nuevosAjustes, UUID idAdmin)`, que: verifica que existe una solicitud de revisión aceptada para esa liquidación, aplica los nuevos ajustes al cálculo base, actualiza el valor final y registra en `AuditoriaLiquidacion` el valor anterior, el valor nuevo, la fecha y el administrador responsable.
+- [ ] T024 [P] [US2] Crear el endpoint `PUT /api/liquidaciones/{id}/recalcular` en el controlador, protegido para `ROLE_ADMIN` únicamente.
+- [ ] T025 [US2] Desarrollar en React el panel de recálculo para administradores, que: primero valida si existe una solicitud de revisión aceptada (consultando el backend) antes de mostrar el formulario, incluye campos para ingresar nuevos ajustes con tipo, monto y motivo (obligatorio), y muestra un modal de confirmación antes de ejecutar el recálculo.
 
 ---
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T023 Configurar perfiles de Spring Boot específicos para despliegue en AWS RDS.
-- [ ] T024 Añadir Swagger/OpenAPI para documentar la API y facilitar la integración con el equipo de frontend.
-- [ ] T025 Implementar manejo de estados de carga en React mientras se espera la respuesta de Spring Boot.
+- [ ] T026 Configurar perfiles de Spring Boot (`application-dev.yml`, `application-prod.yml`) con variables de entorno para credenciales de AWS RDS.
+- [ ] T027 Añadir Swagger / OpenAPI para documentar los endpoints y facilitar la integración con el equipo de frontend y con el Módulo de Rutas y Flotas.
+- [ ] T028 Implementar estados de carga en React (skeleton loaders) mientras se espera la respuesta del backend tras el recálculo.
+- [ ] T029 Agregar índices en PostgreSQL sobre las columnas `id_ruta` y `fecha_calculo` en la tabla `liquidaciones` para optimizar las consultas de búsqueda.
 
 ---
 
 ## Dependencies & Execution Order
 
-**Variables y Configuración (Fase 1 y 2)**: Es crítico resolver el CORS y la inyección de credenciales de DB antes de empezar a programar la lógica de negocio.
+**Schema y restricciones (Phase 1 y 2)**: El script de Flyway con la restricción `UNIQUE(id_ruta)` y la entidad `AuditoriaLiquidacion` deben existir desde el inicio, ya que el primer cálculo ya genera auditoría. No pueden agregarse después.
 
-**Modelos JPA**: Se deben definir las relaciones en Java antes de codificar los repositorios.
+**Estrategias antes del servicio**: Las clases `PorParadaStrategy` y `RecorridoCompletoStrategy` deben implementarse y probarse con JUnit antes de integrarlas en `CalculationService`.
 
-**Servicios antes de Controladores**: El motor de cálculo matemático se programa y prueba con JUnit antes de exponerlo vía REST.
+**Servicios antes de controladores**: El motor de cálculo se programa y valida con tests unitarios antes de exponerse vía REST.
 
-**Integración UI**: React entra en juego al final de cada historia de usuario, consumiendo lo que Spring Boot ya tiene validado.
+**El frontend no dispara el cálculo**: React únicamente visualiza el resultado. El cálculo lo dispara el Módulo de Rutas y Flotas mediante el evento de cierre de ruta. Esta separación debe respetarse durante toda la implementación.
+
+**Integración UI**: React entra en juego al final de cada historia de usuario, consumiendo endpoints que ya están validados por el backend.

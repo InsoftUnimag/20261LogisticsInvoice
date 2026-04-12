@@ -1,138 +1,258 @@
 # Implementation Plan: Visualizar estado del pago
 
-**Date**: 2026-04-08
+**Date**: 2026-04-10
 **Spec**: [Visualizar estado del pago.md]
 
 ## Summary
 
-Este módulo está orientado al usuario final (el transportista o conductor) y permite la consulta segura del estado y los detalles de sus pagos. La implementación pone un fuerte énfasis en la seguridad (Autorización) para restringir el acceso a los datos de pagos estrictamente a sus propietarios. Adicionalmente, incluye la funcionalidad de generación dinámica de documentos en formato PDF para la descarga de comprobantes o vouchers de liquidación.
+El objetivo de esta funcionalidad es permitir la consulta segura del estado de los pagos asociados a liquidaciones previamente calculadas. El sistema debe exponer al usuario autorizado una vista clara del estado actual del pago, y en una segunda historia, el detalle completo incluyendo ajustes y penalizaciones aplicadas junto con la posibilidad de descargar un comprobante en PDF.
+
+La funcionalidad está orientada exclusivamente a consulta. No modifica el estado del pago ni ejecuta procesos financieros. Cualquier intento de acceso a un pago ajeno debe bloquearse y registrarse como un evento de seguridad (edge case del spec).
 
 ## Technical Context
 
 **Language/Version**: Java 21 / JavaScript / React 18+
-**Primary Dependencies**: Spring Boot (Web, Data JPA, Spring Security), OpenPDF (para la generación del voucher), Axios, FileSaver.js (React)
+
+**Primary Dependencies**: Spring Boot (Web, Data JPA, Validation, Security), PostgreSQL Driver, Axios
+
 **Storage**: PostgreSQL 15
-**Testing**: JUnit 5, Spring Security Test, Mockito / Jest
+
+**Testing**: JUnit 5, Mockito, Spring Security Test / Jest, React Testing Library
+
 **Target Platform**: AWS
-**Project Type**: Web application (Backend API + Frontend Dashboard del Transportista)
-**Performance Goals**: Consultas de estado en < 200ms; Generación y descarga de PDF en < 1 segundo.
-**Constraints**: Restricción absoluta de acceso basada en el ID del usuario autenticado (FR-005). Auditoría de seguridad para intentos de acceso no autorizados (Edge Case).
+
+**Project Type**: Web application
+
+**Data Integrity**: La información de pago visualizada debe obtenerse desde registros persistidos y validados; no se permite construir estados calculados en frontend.
+
+**Security**: Spring Security + JWT para garantizar que cada usuario consulte únicamente la información de pago que le corresponde. Los intentos de acceso no autorizado deben registrarse como eventos de seguridad (FR-005, edge case del spec).
+
+**API Pattern**: DTOs de lectura para desacoplar entidades internas de la respuesta expuesta al cliente.
+
+**Performance Goals**: Consulta de lista y detalle del estado del pago en el servidor en menos de 300ms.
+
+**Constraints**: Control de acceso estricto, consistencia con la liquidación asociada, manejo explícito de ausencia de datos, protección frente a accesos no autorizados con registro del intento, respuesta controlada ante fallas del sistema de almacenamiento.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/visualizar-pago/
-├── plan.md              # Este archivo 
-└── spec.md             # Especificación: Visualizar estado del pago.md
+specs/visualizar-estado-pago/
+├── plan.md              # Este archivo
+└── spec.md              # Especificación: Visualizar estado del pago.md
 ```
 
 ### Source Code (repository root)
 
 ```text
-backend/
-├── src/main/java/com/logistica/
-│   ├── config/          # Configuración de Spring Security (JWT)
-│   ├── controllers/     # Endpoints REST (GET /pagos)
-│   ├── dtos/            # DTOs de respuesta (ResumenPagoDTO, DetallePagoDTO)
-│   ├── models/          # Entidades JPA (Pago, EstadoPago, Usuario)
-│   ├── repositories/    # Interfaces Spring Data JPA
-│   ├── security/        # Filtros de seguridad e interceptores
-│   ├── services/        # Lógica de consulta y validación de propiedad
-│   └── utils/           # Generador de PDF (PdfVoucherGenerator.java)
-└── src/test/java/       # Pruebas de autorización y generación de archivos
-
-frontend/
-├── src/
-│   ├── components/      # UI: Tarjetas de estado de pago, Botón de descarga
-│   ├── hooks/           # Manejo de blobs (archivos PDF) en React
-│   ├── services/        # Peticiones autenticadas (Axios con JWT)
-│   └── pages/           # Vistas: "Mis Pagos" y "Detalle del Pago"
-└── package.json
+project/
+├── backend/
+│   ├── src/main/java/com/logistica/
+│   │
+│   │   ├── application/                             # Casos de uso (queries)
+│   │   │   ├── usecases/
+│   │   │   │   ├── liquidacion/
+│   │   │   │   │   ├── ListarLiquidacionesUseCase.java
+│   │   │   │   │   ├── ObtenerDetalleLiquidacionUseCase.java
+│   │   │   │   │   └── BuscarLiquidacionesUseCase.java
+│   │   │   │
+│   │   │   └── dtos/
+│   │   │       ├── request/
+│   │   │       │   └── FiltroLiquidacionDTO.java
+│   │   │       │
+│   │   │       └── response/
+│   │   │           ├── LiquidacionListItemDTO.java
+│   │   │           ├── LiquidacionDetalleDTO.java
+│   │   │           └── PaginacionResponseDTO.java
+│   │
+│   │   ├── domain/                                  # Núcleo del negocio
+│   │   │   ├── models/
+│   │   │   │   └── Liquidacion.java                 # Modelo existente
+│   │   │   │
+│   │   │   ├── repositories/                        # Puertos
+│   │   │   │   └── LiquidacionRepository.java
+│   │   │   │
+│   │   │   └── exceptions/
+│   │   │       ├── LiquidacionNoEncontradaException.java
+│   │   │       └── AccesoDenegadoException.java
+│   │
+│   │   ├── infrastructure/                          # Implementación técnica
+│   │   │   ├── persistence/
+│   │   │   │   ├── entities/                        # JPA (reutilizadas)
+│   │   │   │   └── repositories/                    # Spring Data + queries
+│   │   │   │       └── LiquidacionJpaRepository.java
+│   │   │   │
+│   │   │   ├── web/
+│   │   │   │   ├── controllers/
+│   │   │   │   │   └── LiquidacionController.java
+│   │   │   │   │
+│   │   │   │   └── handlers/
+│   │   │   │       └── GlobalExceptionHandler.java
+│   │   │   │
+│   │   │   ├── adapters/                            # Mappers
+│   │   │   │   └── LiquidacionMapper.java
+│   │   │   │
+│   │   │   └── config/
+│   │   │       ├── WebConfig.java                   # CORS
+│   │   │       ├── SecurityConfig.java              # Seguridad
+│   │   │       └── PaginationConfig.java            # Default page/size
+│   │
+│   │   └── shared/
+│   │       ├── utils/
+│   │       └── constants/
+│
+│   ├── src/main/resources/
+│   │   ├── db/migration/
+│   │   │   └── Vx__indexes_visualizacion_liquidacion.sql
+│   │   │
+│   │   └── application.yml
+│   │
+│   └── pom.xml / build.gradle
+│
+│
+├── frontend/
+│   ├── src/
+│   │
+│   │   ├── app/                                  # Router, config global
+│   │
+│   │   ├── modules/                              # Feature-based
+│   │   │   ├── liquidaciones/
+│   │   │   │   ├── components/                  # Tabla, buscador, alerts
+│   │   │   │   ├── pages/                       # Listado y detalle
+│   │   │   │   ├── services/                    # Axios calls
+│   │   │   │   └── hooks/                       # Manejo de filtros/paginación
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── components/                      # Tabla genérica, loaders, empty states
+│   │   │   ├── services/                        # Axios base config
+│   │   │   └── utils/
+│   │
+│   │   ├── assets/
+│   │   └── styles/
+│
+│   └── package.json
 ```
 
-**Structure Decision**: Se añade la capa de security/ y utils/ en el backend para manejar la autenticación y la construcción de archivos binarios, aislando estas responsabilidades de la lógica de negocio puramente financiera.
+**Structure Decision**: Se utiliza una arquitectura desacoplada con separación entre repositorios, servicios, controladores y DTOs de lectura. La validación de permisos se centraliza en la capa de servicio. El registro de intentos de acceso no autorizado se implementa en la misma capa de seguridad para garantizar trazabilidad. La generación del comprobante se implementa en una utilidad de backend para mantener el documento consistente con la información persistida.
 
 ---
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup & DevOps Foundation (Shared Infrastructure)
 
-**Purpose**: Configurar las herramientas de seguridad y generación de documentos.
+**Purpose**: Preparar la base de seguridad, conectividad y estructura mínima para exponer consultas de estado del pago.
 
-- [ ] T001 Añadir las dependencias spring-boot-starter-security y io.jsonwebtoken:jjwt (o similar para JWT) en el pom.xml/build.gradle.
-- [ ] T002 Añadir la dependencia com.github.librepdf:openpdf (o iText) para la generación de archivos PDF en Java.
-- [ ] T003 En React, instalar file-saver para manejar la descarga del blob del PDF de manera limpia en el navegador.
-
----
-
-## Phase 2: Foundational (Blocking Prerequisites)
-
-**Purpose**: Implementar la capa de seguridad y preparar las consultas optimizadas.
-
-- [ ] T004 Configurar SecurityFilterChain en Spring Boot para exigir que todas las peticiones a /api/pagos/** requieran un token de autenticación válido.
-- [ ] T005 Implementar la extracción del idUsuario directamente desde el token JWT en el contexto de seguridad de Spring (para no confiar en el ID enviado por el cliente en la URL).
-- [ ] T006 Implementar consultas JPQL personalizadas en PagoRepository (ej. findByUsuario_IdUsuario(Long userId)) usando JOIN FETCH para traer el EstadoPago sin incurrir en problemas de rendimiento (N+1).
-
-**Checkpoint**: El backend rechaza peticiones sin token y es capaz de identificar de manera segura quién está haciendo la solicitud.
+- [ ] T001 Configurar Spring Boot con dependencias: Web, Data JPA, Validation, Security y el driver de PostgreSQL.
+- [ ] T002 Configurar React con Axios e interceptores globales para manejo uniforme de errores HTTP.
+- [ ] T003 Definir la configuración base de seguridad con JWT y reglas de autorización para endpoints de consulta de pagos.
+- [ ] T004 Preparar la integración con Flyway para versionar los cambios de esquema requeridos por esta funcionalidad.
+- [ ] T005 Configurar CORS para permitir el consumo seguro de la API desde el frontend autorizado.
 
 ---
 
-## Phase 3: User Story 1 - Consultar estado del pago (Priority: P1)
+## Phase 2: Foundational & Data Integrity (Blocking Prerequisites)
 
-**Goal**: Permitir al usuario ver una lista resumida de sus pagos y el estado actual de cada uno.
+**Purpose**: Definir las entidades, consultas y reglas de acceso necesarias antes de implementar las historias de usuario.
 
-**Independent Test**: Realizar una petición GET con el token de "Usuario A". Verificar que la respuesta solo contenga los pagos del "Usuario A" y nunca los del "Usuario B".
+- [ ] T006 Revisar y completar las entidades JPA involucradas en la consulta según las Key Entities del spec: `Pago` (IdPago, idUsuario, MontoBase, fecha, IdPenalidad, MontoNeto, idLiquidación), `EstadoPago` (IdEstadoPago, idPago, estado), `Liquidacion`, `Usuario` (idUser, nombre, TotalPagado, PagosPendientes), `Ajustes/Penalidad` (IdAjustes, TipoAjustes).
+- [ ] T007 Crear los DTOs de lectura:
+    - `PagoListDTO`: identificador del pago, identificador de la liquidación asociada, fecha, monto y estado del pago.
+    - `PagoDetailDTO`: MontoBase, MontoNeto, fecha, Ajustes/penalidades, estado del pago, idRuta e idLiquidación (campos requeridos por la User Story 2 del spec).
+- [ ] T008 Implementar los repositorios necesarios para consulta:
+    - `PagoRepository` con método de búsqueda por usuario autenticado y por identificador específico.
+    - `EstadoPagoRepository`
+    - `LiquidacionRepository`
+- [ ] T009 Implementar las excepciones de negocio requeridas:
+    - `PagoNotFoundException`
+    - `AccessDeniedPaymentException`
+    - `StorageUnavailableException`
+- [ ] T010 Implementar un `@RestControllerAdvice` global para capturar errores de negocio, errores de acceso y fallas del sistema de almacenamiento, retornando respuestas JSON estructuradas con código HTTP apropiado.
+- [ ] T011 Definir y aplicar índices de base de datos sobre `id_usuario`, `id_liquidacion`, `fecha` y `estado` para optimizar las consultas frecuentes.
+- [ ] T012 Implementar el mecanismo de registro de eventos de seguridad para intentos de acceso no autorizado a pagos ajenos, requerido explícitamente por el edge case del spec. Este registro debe ocurrir en la capa de servicio antes de retornar el error al cliente.
 
-### Tests for User Story 1
-
-- [ ] T007 [P] [US1] Test de integración con @WithMockUser para validar que el endpoint retorna correctamente la lista de pagos del usuario autenticado.
-- [ ] T008 [P] [US1] Test de seguridad verificando que un usuario sin autenticación reciba un HTTP 401 Unauthorized.
-
-### Implementation for User Story 1
-
-- [ ] T009 [P] [US1] Crear el ResumenPagoDTO (IdRuta, MontodePago, Fecha, Estado).
-- [ ] T010 [US1] Implementar en PagoService la lógica para buscar los pagos utilizando el ID extraído del contexto de seguridad.
-- [ ] T011 [US1] Crear el endpoint GET /api/pagos/mis-pagos.
-- [ ] T012 [US1] Desarrollar la vista en React que consuma este endpoint y muestre una tabla o lista de tarjetas con etiquetas de colores según el estado (Verde = Pagado, Amarillo = Pendiente, Rojo = Rechazado).
+**Checkpoint**: El backend puede autenticar al usuario, identificar su contexto de acceso, recuperar correctamente los pagos persistidos con su relación a la liquidación, y registrar automáticamente cualquier intento de acceso no autorizado.
 
 ---
 
-## Phase 4: User Story 2 - Consultar detalle y Descargar Factura (Priority: P2)
+## Phase 3: User Story 1 — Consultar estado del pago (Prioridad: P1)
 
-**Goal**: Mostrar el desglose completo del pago y generar el PDF transaccional.
+**Goal**: Permitir al usuario autorizado consultar el estado actual de su pago (Pagado, Pendiente, Rechazado, En proceso) asociado a una liquidación, mostrando la liquidación asociada cuando el pago está aprobado y el motivo del rechazo cuando fue rechazado (escenarios 1, 2 y 3 del spec).
 
-**Independent Test**: Intentar acceder al detalle del pago "X" (que pertenece a otro usuario). El sistema debe retornar HTTP 403 Forbidden y generar un log de seguridad. Descargar el comprobante y abrir el PDF localmente.
+**Independent Test**: Autenticarse con un usuario válido y consultar el listado de pagos. Verificar que el sistema muestra el estado correcto para cada pago (Pagado con liquidación asociada, Pendiente, Rechazado con motivo). Verificar que el acceso a pagos ajenos es bloqueado y que el intento queda registrado como evento de seguridad.
 
-### Tests for User Story 2
+### Tests para User Story 1
 
-- [ ] T013 [P] [US2] Test unitario para garantizar que la validación de propiedad bloquee el acceso cruzado (FR-005 / Edge Case).
-- [ ] T014 [P] [US2] Test unitario para PdfVoucherGenerator verificando que el documento binario (byte array) se genera correctamente sin lanzar excepciones.
+- [ ] T013 [P] [US1] Test de integración con `@WithMockUser` para validar que el endpoint de listado retorna únicamente los pagos que el usuario autenticado tiene permitido consultar (FR-004, FR-005).
+- [ ] T014 [P] [US1] Test de integración para validar que un pago con estado "Pagado" muestra también la liquidación asociada (escenario 1 del spec).
+- [ ] T015 [P] [US1] Test de integración para validar que un pago con estado "Pendiente" muestra el estado correctamente (escenario 2 del spec).
+- [ ] T016 [P] [US1] Test de integración para validar que un pago con estado "Rechazado" muestra el motivo del rechazo (escenario 3 del spec).
+- [ ] T017 [P] [US1] Test de integración para validar que la búsqueda de un pago inexistente retorna HTTP 404 con mensaje funcional comprensible (edge case del spec).
+- [ ] T018 [P] [US1] Test de seguridad para validar que un usuario sin permisos sobre un pago específico recibe HTTP 403 y que el intento queda registrado como evento de seguridad (edge case del spec, FR-005).
+- [ ] T019 [P] [US1] Test de controlador para validar que una falla del sistema de almacenamiento retorna HTTP 503.
+- [ ] T020 [P] [US1] Test de componente en React para verificar que la lista de pagos muestra estado, fecha, identificadores y acceso al detalle.
+- [ ] T021 [P] [US1] Test de componente en React para verificar que se muestran mensajes adecuados para pago inexistente y sistema no disponible.
 
-### Implementation for User Story 2
+### Implementation para User Story 1
 
-- [ ] T015 [P] [US2] Crear DetallePagoDTO que incluya las penalizaciones/ajustes, liquidación base y motivos de rechazo si aplica.
-- [ ] T016 [US2] Implementar la validación estricta en PagoService: if (!pago.getUsuario().getId().equals(usuarioAutenticadoId)) throw new AccessDeniedException(). Adicionalmente, registrar este evento con un logger nivel WARN.
-- [ ] T017 [US2] Crear el generador de PDF utilizando OpenPDF para maquetar la estructura de la factura (IDRuta, Fecha, MontoBase, Penalizaciones, MontoNeto).
-- [ ] T018 [US2] Crear los endpoints GET /api/pagos/{id}/detalle y GET /api/pagos/{id}/voucher (este último retornando application/pdf).
-- [ ] T019 [US2] En React, crear la vista de detalle y un botón "Descargar Comprobante" que maneje la respuesta como un Blob y fuerce la descarga en el navegador.
+- [ ] T022 [P] [US1] Implementar en `PagoService.java` la lógica `listarPagosDelUsuarioAutenticado(...)`, que obtiene el identificador del usuario desde el contexto de seguridad y consulta únicamente los pagos autorizados para ese usuario (FR-004, FR-005).
+- [ ] T023 [P] [US1] Implementar en `PagoService.java` la lógica `obtenerEstadoPago(...)`, que recupera el estado actual del pago, valida permisos, y en caso de acceso no autorizado registra el intento como evento de seguridad antes de retornar HTTP 403.
+- [ ] T024 [P] [US1] Crear el endpoint `GET /api/pagos` para listar los pagos visibles por el usuario autenticado, con soporte de paginación y filtros básicos.
+- [ ] T025 [P] [US1] Crear el endpoint `GET /api/pagos/{id}` para consultar el estado actual de un pago específico autorizado, incluyendo la liquidación asociada cuando el estado es "Pagado" y el motivo cuando el estado es "Rechazado".
+- [ ] T026 [US1] Implementar en React la vista de listado de pagos mostrando identificador del pago, identificador de la liquidación, fecha, monto y estado del pago.
+- [ ] T027 [US1] Implementar en React la búsqueda de un pago específico dentro del listado disponible para el usuario.
+- [ ] T028 [US1] Implementar mensajes funcionales explícitos para los casos: pago inexistente, acceso no autorizado y sistema de almacenamiento no disponible.
+
+---
+
+## Phase 4: User Story 2 — Consultar detalle del pago y descargar comprobante (Prioridad: P2)
+
+**Goal**: Permitir al usuario autorizado visualizar la información detallada del pago incluyendo MontoBase, MontoNeto, fecha, ajustes y penalizaciones aplicadas, y descargar el comprobante en PDF con los campos requeridos por el spec: IDRuta, Fecha de Emisión, MontoBase, MontoNeto y ajustes de penalidad (FR-003, FR-006).
+
+**Independent Test**: Autenticarse con un usuario válido, acceder al detalle de un pago autorizado y verificar que el sistema muestra MontoBase, MontoNeto, fecha, ajustes/penalidades y estado. Descargar el comprobante y verificar que el PDF contiene IDRuta, Fecha de Emisión, MontoBase, MontoNeto y ajustes de penalidad. Verificar que un usuario sin permisos no puede acceder al detalle ni descargar el comprobante de un pago ajeno, y que el intento queda registrado.
+
+### Tests para User Story 2
+
+- [ ] T029 [P] [US2] Test de integración para validar que el endpoint de detalle retorna MontoBase, MontoNeto, fecha, ajustes/penalidades y estado del pago cuando el registro existe y el usuario tiene permisos (escenario 1 de la User Story 2 del spec).
+- [ ] T030 [P] [US2] Test de integración para validar que el endpoint de descarga retorna `application/pdf` cuando el pago existe y el usuario tiene permisos (escenario 2 de la User Story 2 del spec).
+- [ ] T031 [P] [US2] Test de seguridad para validar que un usuario que intenta acceder al detalle o descargar el comprobante de un pago ajeno recibe HTTP 403 y el intento queda registrado como evento de seguridad.
+- [ ] T032 [P] [US2] Test unitario para validar que el generador del comprobante construye correctamente el PDF con los campos requeridos por el spec: IDRuta, Fecha de Emisión, MontoBase, MontoNeto y ajustes de penalidad.
+- [ ] T033 [P] [US2] Test de componente en React para verificar que el botón de descarga solicita el archivo y maneja correctamente la respuesta binaria.
+- [ ] T034 [P] [US2] Test de componente en React para verificar que se muestra un mensaje de error cuando el comprobante no pueda generarse o el pago no exista.
+
+### Implementation para User Story 2
+
+- [ ] T035 [P] [US2] Añadir la dependencia de generación de PDF al proyecto (ej. iText o Apache PDFBox) en esta fase, ya que es exclusivamente necesaria para esta historia de usuario.
+- [ ] T036 [P] [US2] Implementar en `PagoService.java` la lógica `obtenerDetallePago(...)`, que recupera el pago solicitado, valida permisos de acceso y construye el `PagoDetailDTO` con MontoBase, MontoNeto, fecha, ajustes/penalidades, estado del pago, idRuta e idLiquidación.
+- [ ] T037 [P] [US2] Implementar una utilidad de backend para construir el comprobante en formato PDF con los campos requeridos por el spec: IDRuta, Fecha de Emisión, MontoBase, MontoNeto y ajustes de penalidad.
+- [ ] T038 [P] [US2] Implementar en `PagoService.java` la lógica `generarComprobantePago(...)`, reutilizando la validación de acceso y la recuperación del detalle autorizado del pago.
+- [ ] T039 [P] [US2] Crear el endpoint `GET /api/pagos/{id}/detalle` para consultar el detalle completo del pago autorizado.
+- [ ] T040 [P] [US2] Crear el endpoint `GET /api/pagos/{id}/comprobante` para descargar el comprobante del pago autorizado.
+- [ ] T041 [US2] Implementar en React la vista de detalle del pago mostrando MontoBase, MontoNeto, fecha, ajustes/penalidades y estado.
+- [ ] T042 [US2] Implementar en React el botón de descarga del comprobante dentro de la vista de detalle del pago.
+- [ ] T043 [US2] Implementar en React la gestión de la respuesta binaria para descargar el archivo PDF generado por el backend.
+- [ ] T044 [US2] Mostrar mensajes funcionales claros cuando la descarga falle por inexistencia del pago, falta de permisos o indisponibilidad temporal del sistema.
 
 ---
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T020 Configurar logs de auditoría específicos (SLF4J) para monitorizar en AWS CloudWatch los intentos de acceso a recursos ajenos.
-- [ ] T021 Optimizar el tamaño de la respuesta PDF y añadir metadatos (Autor, Fecha de creación) al archivo generado.
-- [ ] T022 Diseñar una plantilla HTML/CSS para la generación del PDF si se decide usar un motor como Thymeleaf + Flying Saucer en lugar de código Java puro para una factura más estética.
+- [ ] T045 Configurar perfiles de Spring Boot (`application-dev.yml`, `application-prod.yml`) con variables de entorno para credenciales y configuración de seguridad.
+- [ ] T046 Añadir documentación OpenAPI para los endpoints de consulta del estado del pago, detalle y descarga de comprobante.
+- [ ] T047 Implementar estados de carga en React para listado, detalle y descarga del comprobante.
+- [ ] T048 Refinar la serialización de respuestas para garantizar uniformidad entre errores funcionales, errores de autorización y errores de infraestructura.
 
 ---
 
 ## Dependencies & Execution Order
 
-**Seguridad Primero**: Es inútil desarrollar los endpoints de consulta si el sistema no puede identificar quién está preguntando. La configuración del token JWT es el paso cero.
+**Dependencia funcional**: Esta funcionalidad depende de que los módulos de cálculo de liquidación y de registro del estado del pago ya hayan persistido información válida. Sin esos datos, no existe contenido real que visualizar.
 
-**Consultas Base (US1)**: Mapear la relación entre Pago, EstadoPago y Liquidación para que las vistas resumidas funcionen rápido.
+**Seguridad antes que consulta**: La autenticación, autorización y el registro de eventos de seguridad deben implementarse antes de exponer cualquier endpoint de lectura. El filtrado de pagos no puede depender del frontend.
 
-**Validación de Propiedad (US2)**: Implementar el cerrojo lógico de seguridad antes de exponer los detalles profundos del pago.
+**Repositorios antes de servicios**: Las consultas sobre `Pago`, `EstadoPago` y `Liquidacion` deben estar definidas y probadas antes de construir la capa de servicio.
 
-**Generación de Archivos (US2)**: El PDF se genera como última etapa, utilizando los mismos datos que ya fueron extraídos y validados por el servicio de detalle del pago.
+**User Story 1 antes de User Story 2**: El detalle y el comprobante (US2) dependen de que la consulta de estado (US1) ya esté implementada y validada, ya que reutilizan la misma lógica de validación de acceso.
+
+**Dependencia de generación de PDF en Phase 4**: La librería de PDF se incorpora únicamente cuando se implementa la User Story 2, evitando añadir dependencias innecesarias antes de que sean requeridas.
+
+**Frontend al final**: La interfaz React debe integrarse únicamente cuando los endpoints de listado, detalle y descarga ya devuelvan respuestas estables y seguras.
