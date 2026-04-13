@@ -1,5 +1,12 @@
 -- V1__init_schema.sql
 
+-- Tabla para almacenar los contratos
+CREATE TABLE contratos (
+    id UUID PRIMARY KEY,
+    tipo_contratacion VARCHAR(255) NOT NULL,
+    tarifa NUMERIC(19, 4) NOT NULL
+);
+
 -- Tabla para almacenar las liquidaciones calculadas
 CREATE TABLE liquidaciones (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -12,7 +19,9 @@ CREATE TABLE liquidaciones (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     -- Restricción para evitar liquidaciones duplicadas por ruta
-    CONSTRAINT uq_liquidacion_id_ruta UNIQUE (id_ruta)
+    CONSTRAINT uq_liquidacion_id_ruta UNIQUE (id_ruta),
+    -- Llave foránea hacia la tabla de contratos
+    CONSTRAINT fk_liquidacion_contrato FOREIGN KEY (id_contrato) REFERENCES contratos(id)
 );
 
 -- Tabla para almacenar los ajustes (bonos, descuentos, penalizaciones) de una liquidación

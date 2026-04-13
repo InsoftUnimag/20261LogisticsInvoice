@@ -28,6 +28,9 @@ public class LiquidacionEntity {
     @Column(name = "fecha_calculo", nullable = false)
     private OffsetDateTime fechaCalculo;
 
+    @Column(name = "solicitud_revision_aceptada", nullable = false)
+    private boolean solicitudRevisionAceptada;
+
     @OneToMany(mappedBy = "liquidacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AjusteEntity> ajustes;
 
@@ -98,6 +101,14 @@ public class LiquidacionEntity {
 
     public void setFechaCalculo(OffsetDateTime fechaCalculo) {
         this.fechaCalculo = fechaCalculo;
+    }
+
+    public boolean isSolicitudRevisionAceptada() {
+        return solicitudRevisionAceptada;
+    }
+
+    public void setSolicitudRevisionAceptada(boolean solicitudRevisionAceptada) {
+        this.solicitudRevisionAceptada = solicitudRevisionAceptada;
     }
 
     public List<AjusteEntity> getAjustes() {

@@ -14,8 +14,9 @@ public class Liquidacion {
     private BigDecimal valorFinal;
     private OffsetDateTime fechaCalculo;
     private List<Ajuste> ajustes;
+    private boolean solicitudRevisionAceptada;
 
-    public Liquidacion(UUID id, UUID idRuta, UUID idContrato, String estado, BigDecimal valorFinal, OffsetDateTime fechaCalculalo, List<Ajuste> ajustes) {
+    public Liquidacion(UUID id, UUID idRuta, UUID idContrato, String estado, BigDecimal valorFinal, OffsetDateTime fechaCalculo, List<Ajuste> ajustes) {
         this.id = id;
         this.idRuta = idRuta;
         this.idContrato = idContrato;
@@ -23,6 +24,7 @@ public class Liquidacion {
         this.valorFinal = valorFinal;
         this.fechaCalculo = fechaCalculo;
         this.ajustes = ajustes;
+        this.solicitudRevisionAceptada = false; // Por defecto
     }
 
     // Getters y Setters
@@ -81,5 +83,13 @@ public class Liquidacion {
 
     public void setAjustes(List<Ajuste> ajustes) {
         this.ajustes = ajustes;
+    }
+
+    public boolean isSolicitudRevisionAceptada() {
+        return solicitudRevisionAceptada;
+    }
+
+    public void setSolicitudRevisionAceptada(boolean solicitudRevisionAceptada) {
+        this.solicitudRevisionAceptada = solicitudRevisionAceptada;
     }
 }

@@ -70,4 +70,14 @@ class PorParadaStrategyTest {
         BigDecimal resultado = strategy.calcular(ruta, contrato);
         assertEquals(BigDecimal.ZERO, resultado, "El resultado debe ser 0 si no hay paquetes en la ruta.");
     }
+
+    @Test
+    void testCalcularConEstadoDePaqueteDesconocido() {
+        Ruta ruta = new Ruta(UUID.randomUUID(), null, null, Arrays.asList(
+                new Paquete(UUID.randomUUID(), "ENTREGADO", ""), // +10.00
+                new Paquete(UUID.randomUUID(), "ESTADO_INEXISTENTE", "") // +0.00
+        ));
+        BigDecimal resultado = strategy.calcular(ruta, contrato);
+        assertEquals(new BigDecimal("10.00"), resultado, "Debe ignorar (valor 0) los paquetes con estados no reconocidos.");
+    }
 }

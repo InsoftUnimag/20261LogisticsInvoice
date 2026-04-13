@@ -1,5 +1,7 @@
 package com.logistica.application.usecases.liquidacion;
 
+import com.logistica.domain.exceptions.LiquidacionNotFoundException;
+import com.logistica.domain.exceptions.SolicitudRevisionNoAceptadaException;
 import com.logistica.domain.models.Ajuste;
 import com.logistica.domain.models.AuditoriaLiquidacion;
 import com.logistica.domain.models.Liquidacion;
@@ -29,14 +31,17 @@ public class RecalcularLiquidacionUseCase {
 
     @Transactional
     public Liquidacion execute(UUID liquidacionId, List<Ajuste> nuevosAjustes, String responsable) {
+        // 1. Buscar la liquidación
         Liquidacion liquidacion = liquidacionRepository.findById(liquidacionId)
-                .orElseThrow(() -> new com.logistica.domain.exceptions.LiquidacionNotFoundException("No se encontró la liquidación con ID: " + liquidacionId));
+                .orElseThrow(() -> new LiquidacionNotFoundException("No se encontró la liquidación con ID: " + liquidacionId));
 
+        // 2. Validar que la solicitud de revisión haya sido aceptada
+        if (!liquidacion.isSolicitudRevisionAceptada()) {
+            throw new SolicitudRevisionNoAceptadaException("No es posible recalcular. La solicitud de revisión para la liquidación " + liquidacionId + " no ha sido aceptada.");
+        }
+
+        // 3. Aplicar los nuevos ajustes
         BigDecimal valorAnterior = liquidacion.getValorFinal();
-
-        // Lógica para aplicar los nuevos ajustes.
-        // Esto podría ser simplemente sumarlos al valor existente,
-        // o podría implicar una lógica más compleja.
         BigDecimal totalNuevosAjustes = nuevosAjustes.stream()
                 .map(Ajuste::getMonto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -45,9 +50,11 @@ public class RecalcularLiquidacionUseCase {
         liquidacion.setValorFinal(valorNuevo);
         liquidacion.setEstado("RECALCULADA");
 
+        // 4. Guardar los cambios
         ajusteRepository.saveAll(nuevosAjustes);
         Liquidacion liquidacionActualizada = liquidacionRepository.save(liquidacion);
 
+        // 5. Registrar la auditoría
         AuditoriaLiquidacion auditoria = new AuditoriaLiquidacion(
                 UUID.randomUUID(),
                 liquidacionId,
