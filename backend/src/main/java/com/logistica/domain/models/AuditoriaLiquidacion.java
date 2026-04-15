@@ -1,84 +1,75 @@
 package com.logistica.domain.models;
 
+import lombok.Builder;
+import lombok.Getter;
+import com.logistica.domain.enums.TipoOperacion;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Getter
+@Builder
 public class AuditoriaLiquidacion {
 
-    private UUID id;
-    private UUID idLiquidacion;
-    private String operacion;
-    private BigDecimal valorAnterior;
-    private BigDecimal valorNuevo;
-    private OffsetDateTime fechaOperacion;
-    private String responsable;
+    private final UUID id;
+    private final UUID idLiquidacion;
+    private final TipoOperacion operacion;
+    private final BigDecimal valorAnterior;
+    private final BigDecimal valorNuevo;
+    private final OffsetDateTime fechaOperacion;
+    private final String responsable;
 
-    public AuditoriaLiquidacion(UUID id, UUID idLiquidacion, String operacion, BigDecimal valorAnterior, BigDecimal valorNuevo, OffsetDateTime fechaOperacion, String responsable) {
-        this.id = id;
-        this.idLiquidacion = idLiquidacion;
-        this.operacion = operacion;
-        this.valorAnterior = valorAnterior;
-        this.valorNuevo = valorNuevo;
-        this.fechaOperacion = fechaOperacion;
-        this.responsable = responsable;
+
+    public static AuditoriaLiquidacion crearCalculo(
+            UUID idLiquidacion,
+            BigDecimal valorNuevo
+    ) {
+        if (valorNuevo == null){
+            throw new IllegalArgumentException("El valor nuevo no puede ser nulo");
+        }
+        return AuditoriaLiquidacion.builder()
+                .id(UUID.randomUUID())
+                .idLiquidacion(idLiquidacion)
+                .operacion(TipoOperacion.CALCULO)
+                .valorAnterior(null)
+                .valorNuevo(valorNuevo)
+                .fechaOperacion(OffsetDateTime.now())
+                .responsable("SISTEMA")
+                .build();
     }
 
-    // Getters y Setters
 
-    public UUID getId() {
-        return id;
-    }
+    public static AuditoriaLiquidacion crearRecalculo(
+            UUID idLiquidacion,
+            BigDecimal valorAnterior,
+            BigDecimal valorNuevo,
+            String responsable // a futuro debe ser un usuario o tipo de usuario
+    ) {
+        if (idLiquidacion == null) {
+            throw new IllegalArgumentException("El id de la liquidación no puede ser null");
+        }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+        if (valorNuevo == null) {
+            throw new IllegalArgumentException("El valor nuevo no puede ser null");
+        }
 
-    public UUID getIdLiquidacion() {
-        return idLiquidacion;
-    }
+        if (valorAnterior == null) {
+            throw new IllegalArgumentException("El valor anterior no puede ser null");
+        }
 
-    public void setIdLiquidacion(UUID idLiquidacion) {
-        this.idLiquidacion = idLiquidacion;
-    }
+        if (responsable == null || responsable.isBlank()) {
+            throw new IllegalArgumentException("El responsable es obligatorio");
+        }
 
-    public String getOperacion() {
-        return operacion;
-    }
-
-    public void setOperacion(String operacion) {
-        this.operacion = operacion;
-    }
-
-    public BigDecimal getValorAnterior() {
-        return valorAnterior;
-    }
-
-    public void setValorAnterior(BigDecimal valorAnterior) {
-        this.valorAnterior = valorAnterior;
-    }
-
-    public BigDecimal getValorNuevo() {
-        return valorNuevo;
-    }
-
-    public void setValorNuevo(BigDecimal valorNuevo) {
-        this.valorNuevo = valorNuevo;
-    }
-
-    public OffsetDateTime getFechaOperacion() {
-        return fechaOperacion;
-    }
-
-    public void setFechaOperacion(OffsetDateTime fechaOperacion) {
-        this.fechaOperacion = fechaOperacion;
-    }
-
-    public String getResponsable() {
-        return responsable;
-    }
-
-    public void setResponsable(String responsable) {
-        this.responsable = responsable;
+        return AuditoriaLiquidacion.builder()
+                .id(UUID.randomUUID())
+                .idLiquidacion(idLiquidacion)
+                .operacion(TipoOperacion.RECALCULO)
+                .valorAnterior(valorAnterior)
+                .valorNuevo(valorNuevo)
+                .fechaOperacion(OffsetDateTime.now())
+                .responsable(responsable)
+                .build();
     }
 }

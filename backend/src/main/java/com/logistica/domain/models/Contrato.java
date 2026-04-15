@@ -1,42 +1,43 @@
 package com.logistica.domain.models;
 
-import java.util.UUID;
+import com.logistica.domain.enums.TipoContratacion;
+import lombok.Builder;
+import lombok.Getter;
+
 import java.math.BigDecimal;
+import java.util.UUID;
 
+@Getter
+@Builder
 public class Contrato {
-    private UUID id;
-    private String tipoContratacion;
-    private BigDecimal tarifa; // Puede ser por parada o por ruta completa
 
-    // Constructor, getters, and setters
+    private final UUID id;
+    private final TipoContratacion tipoContratacion;
+    private final BigDecimal tarifa;
 
-    public Contrato(UUID id, String tipoContratacion, BigDecimal tarifa) {
+    public Contrato(UUID id, TipoContratacion tipoContratacion, BigDecimal tarifa) {
+        if (id == null) {
+            throw new IllegalArgumentException("El id del contrato no puede ser null");
+        }
+
+        if (tipoContratacion == null) {
+            throw new IllegalArgumentException("El tipo de contratación es obligatorio");
+        }
+
+        if (tarifa == null || tarifa.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("La tarifa debe ser mayor a 0");
+        }
+
         this.id = id;
         this.tipoContratacion = tipoContratacion;
         this.tarifa = tarifa;
     }
 
-    public UUID getId() {
-        return id;
+    public boolean esPorParada() {
+        return tipoContratacion == TipoContratacion.POR_PARADA;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getTipoContratacion() {
-        return tipoContratacion;
-    }
-
-    public void setTipoContratacion(String tipoContratacion) {
-        this.tipoContratacion = tipoContratacion;
-    }
-
-    public BigDecimal getTarifa() {
-        return tarifa;
-    }
-
-    public void setTarifa(BigDecimal tarifa) {
-        this.tarifa = tarifa;
+    public boolean esRecorridoCompleto() {
+        return tipoContratacion == TipoContratacion.RECORRIDO_COMPLETO;
     }
 }

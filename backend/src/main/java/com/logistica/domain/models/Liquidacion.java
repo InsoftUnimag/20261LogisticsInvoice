@@ -1,95 +1,72 @@
 package com.logistica.domain.models;
 
+import lombok.*;
+
+import com.logistica.domain.enums.EstadoLiquidacion;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Builder
 public class Liquidacion {
 
     private UUID id;
     private UUID idRuta;
     private UUID idContrato;
-    private String estado;
+    private EstadoLiquidacion estado;
+    private BigDecimal valorBase;
     private BigDecimal valorFinal;
     private OffsetDateTime fechaCalculo;
-    private List<Ajuste> ajustes;
-    private boolean solicitudRevisionAceptada;
+    @Builder.Default
+    private List<Ajuste> ajustes = new ArrayList<>();
+    @Builder.Default
+    private boolean solicitudRevisionAceptada = false;
 
-    public Liquidacion(UUID id, UUID idRuta, UUID idContrato, String estado, BigDecimal valorFinal, OffsetDateTime fechaCalculo, List<Ajuste> ajustes) {
-        this.id = id;
-        this.idRuta = idRuta;
-        this.idContrato = idContrato;
-        this.estado = estado;
-        this.valorFinal = valorFinal;
-        this.fechaCalculo = fechaCalculo;
-        this.ajustes = ajustes;
-        this.solicitudRevisionAceptada = false; // Por defecto
+    public static Liquidacion crear(UUID idRuta, UUID idContrato, BigDecimal valorBase) {
+        return Liquidacion.builder()
+                .id(UUID.randomUUID())
+                .idRuta(idRuta)
+                .idContrato(idContrato)
+                .valorBase(valorBase)
+                .valorFinal(valorBase)
+                .estado(EstadoLiquidacion.CALCULADA)
+                .fechaCalculo(OffsetDateTime.now())
+                .ajustes(new ArrayList<>())
+                .solicitudRevisionAceptada(false)
+                .build();
     }
 
-    // Getters y Setters
+    public void aplicarAjustes() {
+        BigDecimal totalAjustes = ajustes.stream()
+                .map(Ajuste::aplicar)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    public UUID getId() {
-        return id;
+        this.valorFinal = this.valorBase.add(totalAjustes);
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+
+    public void aceptarRevision() {
+        this.solicitudRevisionAceptada = true;
     }
 
-    public UUID getIdRuta() {
-        return idRuta;
-    }
+    public void recalcular(BigDecimal nuevoBase, List<Ajuste> nuevosAjustes) {
+        if (!solicitudRevisionAceptada) {
+            throw new IllegalStateException("No se puede recalcular sin solicitud aprobada");
+        }
 
-    public void setIdRuta(UUID idRuta) {
-        this.idRuta = idRuta;
-    }
+        this.valorBase = nuevoBase;
+        this.ajustes.clear();
+        if (nuevosAjustes != null){
 
-    public UUID getIdContrato() {
-        return idContrato;
-    }
+        this.ajustes.addAll(nuevosAjustes);
 
-    public void setIdContrato(UUID idContrato) {
-        this.idContrato = idContrato;
-    }
+        }
 
-    public String getEstado() {
-        return estado;
-    }
+        aplicarAjustes();
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public BigDecimal getValorFinal() {
-        return valorFinal;
-    }
-
-    public void setValorFinal(BigDecimal valorFinal) {
-        this.valorFinal = valorFinal;
-    }
-
-    public OffsetDateTime getFechaCalculo() {
-        return fechaCalculo;
-    }
-
-    public void setFechaCalculo(OffsetDateTime fechaCalculo) {
-        this.fechaCalculo = fechaCalculo;
-    }
-
-    public List<Ajuste> getAjustes() {
-        return ajustes;
-    }
-
-    public void setAjustes(List<Ajuste> ajustes) {
-        this.ajustes = ajustes;
-    }
-
-    public boolean isSolicitudRevisionAceptada() {
-        return solicitudRevisionAceptada;
-    }
-
-    public void setSolicitudRevisionAceptada(boolean solicitudRevisionAceptada) {
-        this.solicitudRevisionAceptada = solicitudRevisionAceptada;
+        this.estado = EstadoLiquidacion.RECALCULADA;
     }
 }
