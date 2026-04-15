@@ -1,12 +1,14 @@
 package com.logistica.domain.strategies;
 
-import com.logistica.domain.models.Ruta;
+import com.logistica.domain.enums.TipoContratacion;
 import com.logistica.domain.models.Contrato;
+import com.logistica.domain.models.Ruta;
+
 import java.math.BigDecimal;
 
 public interface LiquidacionStrategy {
 
-    boolean soporta(Contrato contrato)
+    TipoContratacion soporta();
 
     BigDecimal calcular(Ruta ruta, Contrato contrato);
 }

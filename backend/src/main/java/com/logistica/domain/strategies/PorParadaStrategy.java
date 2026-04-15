@@ -1,14 +1,12 @@
-package com.logistica.domain.strategies;
-
-import com.logistica.domain.models.Contrato;
-import com.logistica.domain.models.Paquete;
-import com.logistica.domain.models.Ruta;
-
-import java.math.BigDecimal;
-
+@Component
 public class PorParadaStrategy implements LiquidacionStrategy {
 
     private static final BigDecimal PORCENTAJE_FALLIDO_CLIENTE = new BigDecimal("0.5");
+
+    @Override
+    public TipoContratacion soporta() {
+        return TipoContratacion.POR_PARADA;
+    }
 
     @Override
     public BigDecimal calcular(Ruta ruta, Contrato contrato) {
@@ -18,15 +16,13 @@ public class PorParadaStrategy implements LiquidacionStrategy {
 
         BigDecimal tarifa = contrato.getTarifaSegura();
 
-        return ruta.getPaquetes().stream()
+        return ruta.obtenerPaquetesValidos().stream()
                 .map(p -> calcularValorPorPaquete(p, tarifa))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private BigDecimal calcularValorPorPaquete(Paquete paquete, BigDecimal tarifa) {
-
         BigDecimal factor = paquete.obtenerFactorPago(PORCENTAJE_FALLIDO_CLIENTE);
-
         return tarifa.multiply(factor);
     }
 
@@ -37,12 +33,8 @@ public class PorParadaStrategy implements LiquidacionStrategy {
     }
 
     private void validarRuta(Ruta ruta) {
-        if (ruta == null) {
-            throw new IllegalArgumentException("La ruta no puede ser null");
-        }
-
-        if (!ruta.tienePaquetes()) {
-            throw new IllegalArgumentException("La ruta no tiene paquetes para calcular");
+        if (ruta == null || !ruta.tienePaquetes()) {
+            throw new IllegalArgumentException("La ruta no tiene paquetes válidos");
         }
     }
 }

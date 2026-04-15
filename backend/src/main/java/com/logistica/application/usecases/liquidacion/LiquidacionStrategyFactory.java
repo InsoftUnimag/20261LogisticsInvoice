@@ -2,29 +2,34 @@ package com.logistica.application.usecases.liquidacion;
 
 import com.logistica.domain.enums.TipoContratacion;
 import com.logistica.domain.strategies.LiquidacionStrategy;
-import com.logistica.domain.strategies.PorParadaStrategy;
-import com.logistica.domain.strategies.RecorridoCompletoStrategy;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class LiquidacionStrategyFactory {
 
     private final Map<TipoContratacion, LiquidacionStrategy> strategies;
 
-    public LiquidacionStrategyFactory() {
-        strategies = Map.of(
-                TipoContratacion.POR_PARADA, new PorParadaStrategy(),
-                TipoContratacion.RECORRIDO_COMPLETO, new RecorridoCompletoStrategy()
-        );
+    public LiquidacionStrategyFactory(List<LiquidacionStrategy> strategyList) {
+        this.strategies = strategyList.stream()
+                .collect(Collectors.toMap(
+                        LiquidacionStrategy::soporta,
+                        strategy -> strategy
+                ));
     }
 
-    public LiquidacionStrategy getStrategy(TipoContratacion tipoContratacion) {
-        LiquidacionStrategy strategy = strategies.get(tipoContratacion);
+    public LiquidacionStrategy getStrategy(TipoContratacion tipo) {
+        LiquidacionStrategy strategy = strategies.get(tipo);
+
         if (strategy == null) {
-            throw new IllegalArgumentException("Tipo de contratación no válido: " + tipoContratacion);
+            throw new IllegalArgumentException(
+                    "No existe estrategia para el tipo: " + tipo
+            );
         }
+
         return strategy;
     }
 }

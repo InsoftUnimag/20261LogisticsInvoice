@@ -30,13 +30,16 @@ public class AjusteRepositoryImpl implements AjusteRepository {
 
     @Override
     public List<Ajuste> saveAll(List<Ajuste> ajustes) {
-        List<AjusteEntity> entities = ajustes.stream().map(mapper::toEntity).collect(Collectors.toList());
-        List<AjusteEntity> savedEntities = jpaRepository.saveAll(entities);
-        return savedEntities.stream().map(mapper::toModel).collect(Collectors.toList());
+        List<AjusteEntity> entities = ajustes.stream()
+                .map(mapper::toEntity)
+                .collect(Collectors.toList());
+        return jpaRepository.saveAll(entities).stream()
+                .map(mapper::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Ajuste> findByLiquidacionId(UUID liquidacionId) {
+    public List<Ajuste> findByIdLiquidacion(UUID liquidacionId) {
         return jpaRepository.findByLiquidacionId(liquidacionId).stream()
                 .map(mapper::toModel)
                 .collect(Collectors.toList());

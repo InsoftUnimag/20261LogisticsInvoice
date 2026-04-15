@@ -7,5 +7,5 @@ import java.util.UUID;
 public interface AjusteRepository {
     Ajuste save(Ajuste ajuste);
     List<Ajuste> saveAll(List<Ajuste> ajustes);
-    List<Ajuste> findByLiquidacionId(UUID liquidacionId);
+    List<Ajuste> findByIdLiquidacion(UUID liquidacionId);
 }

@@ -6,6 +6,10 @@ import com.logistica.infrastructure.adapters.AuditoriaLiquidacionMapper;
 import com.logistica.infrastructure.persistence.entities.AuditoriaLiquidacionEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Repository
 public class AuditoriaLiquidacionRepositoryImpl implements AuditoriaLiquidacionRepository {
 
@@ -22,5 +26,12 @@ public class AuditoriaLiquidacionRepositoryImpl implements AuditoriaLiquidacionR
         AuditoriaLiquidacionEntity entity = mapper.toEntity(auditoriaLiquidacion);
         AuditoriaLiquidacionEntity savedEntity = jpaRepository.save(entity);
         return mapper.toModel(savedEntity);
+    }
+
+    @Override
+    public List<AuditoriaLiquidacion> findByIdLiquidacion(UUID liquidacionId) {
+        return jpaRepository.findByIdLiquidacion(liquidacionId).stream()
+                .map(mapper::toModel)
+                .collect(Collectors.toList());
     }
 }

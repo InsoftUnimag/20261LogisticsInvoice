@@ -2,25 +2,12 @@ package com.logistica.application.dtos.request;
 
 import java.util.List;
 
+@Data
 public class RecalcularLiquidacionRequestDTO {
+
+    @NotEmpty
     private List<AjusteDTO> ajustes;
+
+    @NotBlank
     private String responsable;
-
-    // Getters y Setters
-
-    public List<AjusteDTO> getAjustes() {
-        return ajustes;
-    }
-
-    public void setAjustes(List<AjusteDTO> ajustes) {
-        this.ajustes = ajustes;
-    }
-
-    public String getResponsable() {
-        return responsable;
-    }
-
-    public void setResponsable(String responsable) {
-        this.responsable = responsable;
-    }
 }

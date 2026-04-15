@@ -25,28 +25,37 @@ public class RecalcularLiquidacionUseCase {
 
     @Transactional
     public Liquidacion execute(UUID liquidacionId, List<Ajuste> nuevosAjustes, String responsable) {
-        // 1. Buscar la liquidación
+
+        // 1. Buscar liquidación
         Liquidacion liquidacion = liquidacionRepository.findById(liquidacionId)
-                .orElseThrow(() -> new LiquidacionNotFoundException("No se encontró la liquidación con ID: " + liquidacionId));
+                .orElseThrow(() -> new LiquidacionNotFoundException(liquidacionId));
+
+        if (!liquidacion.isSolicitudRevisionAceptada()) {
+            throw new IllegalStateException("No se puede recalcular sin solicitud aprobada");
+        }
 
         BigDecimal valorAnterior = liquidacion.getValorFinal();
 
-        // 2. Usar la regla de negocio del modelo para recalcular
-        // Nota: El valorBase se mantiene o se podría pasar uno nuevo si fuera necesario. 
-        // Para este flujo asumimos que el base es el mismo y cambian los ajustes.
-        liquidacion.recalcular(liquidacion.getValorBase(), nuevosAjustes);
+        // 2. Asociar ajustes
+        List<Ajuste> ajustesAsociados = nuevosAjustes.stream()
+                .map(a -> a.asociarALiquidacion(liquidacionId))
+                .toList();
 
-        // 3. Guardar los cambios
-        ajusteRepository.saveAll(nuevosAjustes);
+        // 3. Recalcular (dominio)
+        liquidacion.recalcular(ajustesAsociados);
+
+        // 4. Persistir
+        ajusteRepository.saveAll(ajustesAsociados);
         Liquidacion liquidacionActualizada = liquidacionRepository.save(liquidacion);
 
-        // 4. Registrar la auditoría usando la factory del modelo
+        // 5. Auditoría
         AuditoriaLiquidacion auditoria = AuditoriaLiquidacion.crearRecalculo(
                 liquidacionId,
                 valorAnterior,
                 liquidacionActualizada.getValorFinal(),
                 responsable
         );
+
         auditoriaRepository.save(auditoria);
 
         return liquidacionActualizada;

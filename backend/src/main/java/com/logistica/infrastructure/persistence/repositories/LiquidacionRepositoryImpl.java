@@ -33,6 +33,11 @@ public class LiquidacionRepositoryImpl implements LiquidacionRepository {
     }
 
     @Override
+    public Optional<Liquidacion> findByIdRuta(UUID idRuta) {
+        return jpaRepository.findByIdRuta(idRuta).map(mapper::toModel);
+    }
+
+    @Override
     public boolean existsByIdRuta(UUID idRuta) {
         return jpaRepository.existsByIdRuta(idRuta);
     }

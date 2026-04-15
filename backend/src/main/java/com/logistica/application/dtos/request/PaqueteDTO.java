@@ -5,7 +5,12 @@ import java.util.UUID;
 
 @Data
 public class PaqueteDTO {
+
+    @NotNull
     private UUID id;
-    private String estadoFinal;
+
+    @NotNull
+    private EstadoPaquete estadoFinal;
+
     private String novedades;
 }

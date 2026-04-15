@@ -1,48 +1,40 @@
 package com.logistica.infrastructure.web.handlers;
 
-import com.logistica.domain.exceptions.ContratoNotFoundException;
-import com.logistica.domain.exceptions.LiquidacionDuplicadaException;
-import com.logistica.domain.exceptions.LiquidacionNotFoundException;
+import import com.logistica.domain.exceptions.DomainException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
-import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ContratoNotFoundException.class, LiquidacionNotFoundException.class})
-    public ResponseEntity<Object> handleNotFoundException(RuntimeException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
-    }
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(LiquidacionDuplicadaException.class)
-    public ResponseEntity<Object> handleConflictException(RuntimeException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.CONFLICT, request);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleBadRequestException(RuntimeException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
+        log.warn("Error de negocio: {}", ex.getMessage());
+        return buildResponse(ex.getMessage(), ex.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Error inesperado", ex);
+        return buildResponse("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<Object> buildErrorResponse(Exception ex, HttpStatus status, WebRequest request) {
-        Map<String, Object> body = Map.of(
-                "timestamp", OffsetDateTime.now(),
-                "status", status.value(),
-                "error", status.getReasonPhrase(),
-                "message", ex.getMessage(),
-                "path", request.getDescription(false).substring(4)
-        );
-        return new ResponseEntity<>(body, status);
+    private ResponseEntity<ErrorResponse> buildResponse(String message, HttpStatus status) {
+        ErrorResponse body = ErrorResponse.builder()
+                .timestamp(OffsetDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .build();
+
+        return ResponseEntity.status(status).body(body);
     }
 }
