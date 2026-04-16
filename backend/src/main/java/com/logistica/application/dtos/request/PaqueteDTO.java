@@ -1,5 +1,7 @@
 package com.logistica.application.dtos.request;
 
+import com.logistica.domain.enums.EstadoPaquete;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.util.UUID;
 
