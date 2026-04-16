@@ -1,11 +1,13 @@
 package com.logistica.infrastructure.adapters;
 
+import com.logistica.application.dtos.response.AjusteResponseDTO;
 import com.logistica.application.dtos.response.LiquidacionResponseDTO;
 import com.logistica.domain.models.Liquidacion;
 import com.logistica.infrastructure.persistence.entities.LiquidacionEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,7 +40,8 @@ public class LiquidacionMapper {
                         var e = ajusteMapper.toEntity(ajuste);
                         e.setLiquidacion(entity);
                         return e;
-                    }).collect(Collectors.toList()));
+                    })
+                    .collect(Collectors.toList()));
         }
 
         return entity;
@@ -58,10 +61,11 @@ public class LiquidacionMapper {
                 .valorFinal(entity.getValorFinal())
                 .fechaCalculo(entity.getFechaCalculo())
                 .solicitudRevisionAceptada(entity.isSolicitudRevisionAceptada())
-                .ajustes(entity.getAjustes() != null ?
-                        entity.getAjustes().stream()
-                                .map(ajusteMapper::toModel)
-                                .collect(Collectors.toList()) : new ArrayList<>())
+                .ajustes(entity.getAjustes() != null
+                        ? entity.getAjustes().stream()
+                        .map(ajusteMapper::toModel)
+                        .collect(Collectors.toList())
+                        : new ArrayList<>())
                 .build();
     }
 
@@ -70,21 +74,19 @@ public class LiquidacionMapper {
             return null;
         }
 
-        LiquidacionResponseDTO dto = new LiquidacionResponseDTO();
-        dto.setId(model.getId());
-        dto.setIdRuta(model.getIdRuta());
-        dto.setIdContrato(model.getIdContrato());
-        dto.setEstado(model.getEstado().name());
-        dto.setValorFinal(model.getValorFinal());
-        dto.setFechaCalculo(model.getFechaCalculo());
-        dto.setSolicitudRevisionAceptada(model.isSolicitudRevisionAceptada());
+        List<AjusteResponseDTO> ajustesDto = model.getAjustes() != null
+                ? model.getAjustes().stream()
+                .map(ajusteMapper::toResponseDTO)
+                .collect(Collectors.toList())
+                : List.of();
 
-        if (model.getAjustes() != null) {
-            dto.setAjustes(model.getAjustes().stream()
-                    .map(ajusteMapper::toResponseDTO)
-                    .collect(Collectors.toList()));
-        }
-
-        return dto;
+        return LiquidacionResponseDTO.builder()
+                .id(model.getId())
+                .idRuta(model.getIdRuta())
+                .estado(model.getEstado().name())
+                .valorFinal(model.getValorFinal())
+                .fechaCalculo(model.getFechaCalculo())
+                .ajustes(ajustesDto)
+                .build();
     }
 }

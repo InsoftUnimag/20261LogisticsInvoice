@@ -1,3 +1,14 @@
+package com.logistica.domain.strategies;
+
+import com.logistica.domain.enums.TipoContratacion;
+import com.logistica.domain.models.Contrato;
+import com.logistica.domain.models.Paquete;
+import com.logistica.domain.models.Ruta;
+import com.logistica.domain.strategies.LiquidacionStrategy;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+
 @Component
 public class PorParadaStrategy implements LiquidacionStrategy {
 

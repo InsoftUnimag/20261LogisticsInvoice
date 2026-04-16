@@ -28,14 +28,14 @@ public class AuditoriaLiquidacionMapper {
             return null;
         }
 
-        return new AuditoriaLiquidacion(
-                entity.getId(),
-                entity.getIdLiquidacion(),
-                entity.getOperacion(),
-                entity.getValorAnterior(),
-                entity.getValorNuevo(),
-                entity.getFechaOperacion(),
-                entity.getResponsable()
-        );
+        return AuditoriaLiquidacion.builder()
+                .id(entity.getId())
+                .idLiquidacion(entity.getIdLiquidacion())
+                .operacion(entity.getOperacion())
+                .valorAnterior(entity.getValorAnterior())
+                .valorNuevo(entity.getValorNuevo())
+                .fechaOperacion(entity.getFechaOperacion())
+                .responsable(entity.getResponsable())
+                .build();
     }
 }

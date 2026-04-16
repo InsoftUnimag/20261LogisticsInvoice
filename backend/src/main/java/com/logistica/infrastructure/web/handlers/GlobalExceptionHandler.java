@@ -1,10 +1,14 @@
 package com.logistica.infrastructure.web.handlers;
 
-import import com.logistica.domain.exceptions.DomainException;
+import com.logistica.domain.exceptions.ContratoNotFoundException;
+import com.logistica.domain.exceptions.DomainException;
+import com.logistica.domain.exceptions.LiquidacionDuplicadaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,27 +17,30 @@ import java.time.OffsetDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(ContratoNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleContratoNotFound(ContratoNotFoundException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
-    @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
-        log.warn("Error de negocio: {}", ex.getMessage());
-        return buildResponse(ex.getMessage(), ex.getStatus());
+    @ExceptionHandler(LiquidacionDuplicadaException.class)
+    public ResponseEntity<ProblemDetail> handleLiquidacionDuplicada(LiquidacionDuplicadaException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalState(IllegalStateException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-        log.error("Error inesperado", ex);
+    public ResponseEntity<ProblemDetail> handleGeneral(Exception ex) {
         return buildResponse("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ErrorResponse> buildResponse(String message, HttpStatus status) {
-        ErrorResponse body = ErrorResponse.builder()
-                .timestamp(OffsetDateTime.now())
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .message(message)
-                .build();
+    private ResponseEntity<ProblemDetail> buildResponse(String message, HttpStatus status) {
+        ProblemDetail body = ProblemDetail.forStatusAndDetail(status, message);
+        body.setTitle(status.getReasonPhrase());
+        body.setProperty("timestamp", OffsetDateTime.now());
 
         return ResponseEntity.status(status).body(body);
     }

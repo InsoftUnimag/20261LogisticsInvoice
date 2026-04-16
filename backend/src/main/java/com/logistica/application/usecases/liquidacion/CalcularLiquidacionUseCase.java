@@ -22,7 +22,7 @@ import java.util.UUID;
 public class CalcularLiquidacionUseCase {
 
     private final LiquidacionRepository liquidacionRepository;
-    private final ContratoRepository contratoRepository;
+    private final ContratoRepository  contratoRepository;
     private final AuditoriaLiquidacionRepository auditoriaRepository;
     private final LiquidacionStrategyFactory strategyFactory;
 

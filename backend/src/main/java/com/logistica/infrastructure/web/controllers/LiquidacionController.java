@@ -44,7 +44,12 @@ public class LiquidacionController {
             @RequestBody RecalcularLiquidacionRequestDTO request) {
 
         List<Ajuste> nuevosAjustes = request.getAjustes().stream()
-                .map(a -> new Ajuste(null, id, a.getTipo(), a.getMonto(), a.getMotivo()))
+                .map(a -> Ajuste.builder()
+                        .id(UUID.randomUUID())
+                        .tipo(a.getTipo())
+                        .monto(a.getMonto())
+                        .motivo(a.getMotivo())
+                        .build())
                 .collect(Collectors.toList());
 
         com.logistica.domain.models.Liquidacion liquidacion = recalcularLiquidacionUseCase.execute(id, nuevosAjustes, request.getResponsable());

@@ -1,6 +1,6 @@
 package com.logistica.infrastructure.adapters;
 
-import com.logistica.application.dtos.response.AjusteDTO;
+import com.logistica.application.dtos.response.AjusteResponseDTO;
 import com.logistica.domain.models.Ajuste;
 import com.logistica.infrastructure.persistence.entities.AjusteEntity;
 import org.springframework.stereotype.Component;
@@ -35,16 +35,16 @@ public class AjusteMapper {
                 .build();
     }
 
-    public AjusteDTO toResponseDTO(Ajuste model) {
+    public AjusteResponseDTO toResponseDTO(Ajuste model) {
         if (model == null) {
             return null;
         }
 
-        AjusteDTO dto = new AjusteDTO();
-        dto.setId(model.getId());
-        dto.setTipo(model.getTipo().name());
-        dto.setMonto(model.getMonto());
-        dto.setMotivo(model.getMotivo());
-        return dto;
+        return AjusteResponseDTO.builder()
+                .id(model.getId())
+                .tipo(model.getTipo().name())
+                .monto(model.getMonto())
+                .motivo(model.getMotivo())
+                .build();
     }
 }

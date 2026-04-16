@@ -69,6 +69,11 @@ public class Ruta {
     public long paquetesFallidosTransportista() {
         return paquetes.stream().filter(Paquete::esFallidoTransportista).count();
     }
+    public List<Paquete> obtenerPaquetesValidos() {
+        return paquetes.stream()
+                .filter(Paquete::tieneReglaDePagoAplicable)
+                .toList();
+    }
 
     public boolean fueCompletada() {
         return tienePaquetes() && paquetes.stream().allMatch(Paquete::esEntregado);

@@ -61,4 +61,7 @@ public class Paquete {
         }
         return BigDecimal.ZERO;
     }
+    public boolean tieneReglaDePagoAplicable() {
+        return esValidoParaCalculo();
+    }
 }

@@ -63,4 +63,18 @@ public class Ajuste {
             return base.subtract(monto);
         }
     }
+
+    public Ajuste asociarALiquidacion(UUID liquidacionId) {
+        if (liquidacionId == null) {
+            throw new IllegalArgumentException("El id de la liquidación es obligatorio");
+        }
+
+        return Ajuste.builder()
+                .id(this.id != null ? this.id : UUID.randomUUID())
+                .idLiquidacion(liquidacionId)
+                .tipo(this.tipo)
+                .monto(this.monto)
+                .motivo(this.motivo)
+                .build();
+    }
 }

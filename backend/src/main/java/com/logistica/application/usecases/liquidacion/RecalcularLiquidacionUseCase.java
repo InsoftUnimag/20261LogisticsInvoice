@@ -42,7 +42,8 @@ public class RecalcularLiquidacionUseCase {
                 .toList();
 
         // 3. Recalcular (dominio)
-        liquidacion.recalcular(ajustesAsociados);
+        // 3. Recalcular (dominio)
+        liquidacion.recalcular(liquidacion.getValorBase(), ajustesAsociados);
 
         // 4. Persistir
         ajusteRepository.saveAll(ajustesAsociados);

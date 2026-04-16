@@ -41,12 +41,13 @@ public class Liquidacion {
 
     public void aplicarAjustes() {
         BigDecimal totalAjustes = ajustes.stream()
-                .map(Ajuste::aplicar)
+                .map(ajuste -> ajuste.getTipo().esBono()
+                        ? ajuste.getMonto()
+                        : ajuste.getMonto().negate())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         this.valorFinal = this.valorBase.add(totalAjustes);
     }
-
 
     public void aceptarRevision() {
         this.solicitudRevisionAceptada = true;
