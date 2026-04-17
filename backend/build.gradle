@@ -26,8 +26,6 @@ dependencies {
 
     // Flyway
     implementation 'org.flywaydb:flyway-core'
-    // Se elimina la dependencia problemática 'flyway-database-postgresql' 
-    // y se deja que flyway-core maneje postgres por defecto o se usa la de spring-boot-bom
 
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
@@ -49,6 +47,9 @@ dependencies {
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

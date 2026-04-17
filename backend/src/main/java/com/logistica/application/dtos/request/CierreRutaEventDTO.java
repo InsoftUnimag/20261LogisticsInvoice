@@ -22,6 +22,6 @@ public class CierreRutaEventDTO {
     @NotNull
     private OffsetDateTime fechaCierre;
 
-    @NotEmpty
+    @NotEmpty(message = "La lista de paquetes no puede estar vacía")
     private List<PaqueteDTO> paquetes;
 }
