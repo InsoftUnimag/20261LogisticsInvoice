@@ -20,8 +20,9 @@ public class LiquidacionEntity extends BaseEntity {
     @Column(name = "id_ruta", nullable = false, unique = true)
     private UUID idRuta;
 
-    @Column(name = "id_contrato", nullable = false)
-    private UUID idContrato;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_contrato", nullable = false)
+    private ContratoEntity contrato;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)

@@ -3,6 +3,7 @@ package com.logistica.infrastructure.persistence.mapper;
 import com.logistica.application.dtos.response.AjusteResponseDTO;
 import com.logistica.application.dtos.response.LiquidacionResponseDTO;
 import com.logistica.domain.models.Liquidacion;
+import com.logistica.infrastructure.persistence.entities.ContratoEntity;
 import com.logistica.infrastructure.persistence.entities.LiquidacionEntity;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,13 @@ public class LiquidacionMapper {
         LiquidacionEntity entity = new LiquidacionEntity();
         entity.setId(model.getId());
         entity.setIdRuta(model.getIdRuta());
-        entity.setIdContrato(model.getIdContrato());
+        
+        if (model.getIdContrato() != null) {
+            ContratoEntity contrato = new ContratoEntity();
+            contrato.setId(model.getIdContrato());
+            entity.setContrato(contrato);
+        }
+        
         entity.setEstado(model.getEstado());
         entity.setValorBase(model.getValorBase());
         entity.setValorFinal(model.getValorFinal());
@@ -47,7 +54,7 @@ public class LiquidacionMapper {
         return Liquidacion.builder()
                 .id(entity.getId())
                 .idRuta(entity.getIdRuta())
-                .idContrato(entity.getIdContrato())
+                .idContrato(entity.getContrato() != null ? entity.getContrato().getId() : null)
                 .estado(entity.getEstado())
                 .valorBase(entity.getValorBase())
                 .valorFinal(entity.getValorFinal())

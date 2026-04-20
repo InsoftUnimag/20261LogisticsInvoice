@@ -2,11 +2,14 @@ package com.logistica.infrastructure.persistence.repositories;
 
 import com.logistica.domain.enums.EstadoLiquidacion;
 import com.logistica.domain.enums.TipoAjuste;
+import com.logistica.domain.enums.TipoContratacion;
 import com.logistica.infrastructure.persistence.entities.AjusteEntity;
+import com.logistica.infrastructure.persistence.entities.ContratoEntity;
 import com.logistica.infrastructure.persistence.entities.LiquidacionEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -22,47 +25,24 @@ class AjusteRepositoryIT extends AbstractRepositoryIT {
     private AjusteJpaRepository ajusteRepository;
 
     @Autowired
-    private LiquidacionJpaRepository liquidacionRepository;
+    private TestEntityManager entityManager;
 
     @Test
     @DisplayName("Debe encontrar ajustes por el ID de la liquidación")
     void shouldFindByLiquidacionId() {
-        // Given: Una liquidación persistida
-        LiquidacionEntity liq = new LiquidacionEntity();
-        liq.setId(UUID.randomUUID());
-        liq.setIdRuta(UUID.randomUUID());
-        liq.setIdContrato(UUID.randomUUID());
-        liq.setEstado(EstadoLiquidacion.CALCULADA);
-        liq.setValorBase(BigDecimal.TEN);
-        liq.setValorFinal(BigDecimal.TEN);
-        liq.setFechaCalculo(OffsetDateTime.now());
+        // Given: Un contrato y una liquidación persistida
+        ContratoEntity contrato = createContrato();
+        entityManager.persist(contrato);
         
-        // Asignar auditoría manual para evitar errores de restricción not null en tests
-        liq.setCreatedAt(OffsetDateTime.now());
-        liq.setUpdatedAt(OffsetDateTime.now());
-        
-        liquidacionRepository.saveAndFlush(liq);
+        LiquidacionEntity liq = createLiquidacion(UUID.randomUUID(), contrato);
+        entityManager.persist(liq);
 
         // Given: Dos ajustes asociados
-        AjusteEntity a1 = new AjusteEntity();
-        a1.setId(UUID.randomUUID());
-        a1.setLiquidacion(liq);
-        a1.setTipo(TipoAjuste.BONO);
-        a1.setMonto(new BigDecimal("10.0000"));
-        a1.setMotivo("Bono 1");
-        a1.setCreatedAt(OffsetDateTime.now());
-        a1.setUpdatedAt(OffsetDateTime.now());
-        
-        AjusteEntity a2 = new AjusteEntity();
-        a2.setId(UUID.randomUUID());
-        a2.setLiquidacion(liq);
-        a2.setTipo(TipoAjuste.PENALIZACION);
-        a2.setMonto(new BigDecimal("5.0000"));
-        a2.setMotivo("Descuento 1");
-        a2.setCreatedAt(OffsetDateTime.now());
-        a2.setUpdatedAt(OffsetDateTime.now());
+        AjusteEntity a1 = createAjuste(liq, TipoAjuste.BONO, "10.0000", "Bono 1");
+        AjusteEntity a2 = createAjuste(liq, TipoAjuste.PENALIZACION, "5.0000", "Descuento 1");
         
         ajusteRepository.saveAllAndFlush(List.of(a1, a2));
+        entityManager.clear(); // Forzar carga de DB
 
         // When
         List<AjusteEntity> results = ajusteRepository.findByLiquidacion_Id(liq.getId());
@@ -71,5 +51,41 @@ class AjusteRepositoryIT extends AbstractRepositoryIT {
         assertThat(results).hasSize(2);
         assertThat(results).extracting(AjusteEntity::getMotivo)
                 .containsExactlyInAnyOrder("Bono 1", "Descuento 1");
+    }
+
+    // --- Helpers de Creación ---
+
+    private ContratoEntity createContrato() {
+        ContratoEntity contrato = new ContratoEntity();
+        contrato.setId(UUID.randomUUID());
+        contrato.setTipoContratacion(TipoContratacion.POR_PARADA);
+        contrato.setTarifa(new BigDecimal("10.0000"));
+        return contrato;
+    }
+
+    private LiquidacionEntity createLiquidacion(UUID rutaId, ContratoEntity contrato) {
+        LiquidacionEntity entity = new LiquidacionEntity();
+        entity.setId(UUID.randomUUID());
+        entity.setIdRuta(rutaId);
+        entity.setContrato(contrato);
+        entity.setEstado(EstadoLiquidacion.CALCULADA);
+        entity.setValorBase(BigDecimal.TEN);
+        entity.setValorFinal(BigDecimal.TEN);
+        entity.setFechaCalculo(OffsetDateTime.now());
+        entity.setCreatedAt(OffsetDateTime.now());
+        entity.setUpdatedAt(OffsetDateTime.now());
+        return entity;
+    }
+
+    private AjusteEntity createAjuste(LiquidacionEntity liq, TipoAjuste tipo, String monto, String motivo) {
+        AjusteEntity ajuste = new AjusteEntity();
+        ajuste.setId(UUID.randomUUID());
+        ajuste.setLiquidacion(liq);
+        ajuste.setTipo(tipo);
+        ajuste.setMonto(new BigDecimal(monto));
+        ajuste.setMotivo(motivo);
+        ajuste.setCreatedAt(OffsetDateTime.now());
+        ajuste.setUpdatedAt(OffsetDateTime.now());
+        return ajuste;
     }
 }
