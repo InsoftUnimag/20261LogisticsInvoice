@@ -5,11 +5,9 @@
 
 ## Summary
 
-El objetivo de esta funcionalidad es automatizar completamente el cálculo de las liquidaciones de los transportistas. El sistema actúa de forma autónoma:
-en cuanto recibe el evento de cierre de ruta desde el Módulo de Rutas y Flotas y consulta el estado final de los paquetes, calcula la liquidación sin intervención de ningún usuario, aplicando las reglas del modelo de contratación, las tarifas definidas y las penalizaciones correspondientes.
+El objetivo de esta funcionalidad es automatizar completamente el cálculo de las liquidaciones de los transportistas. El sistema actúa de forma autónoma: en cuanto recibe el evento de cierre de ruta desde el Módulo de Rutas y Flotas y consulta el estado final de los paquetes, calcula la liquidación sin intervención de ningún usuario, aplicando las reglas del modelo de contratación, las tarifas definidas y las penalizaciones correspondientes.
 
-Existe un flujo secundario de recálculo, que ocurre únicamente cuando un conductor solicita formalmente una revisión de su liquidación y esa solicitud es aceptada por un administrador.
-En ese caso, el administrador ingresa los nuevos ajustes manualmente y el sistema recalcula el valor final de forma automática, dejando siempre trazabilidad completa mediante auditoría.
+Existe un flujo secundario de recálculo, que ocurre únicamente cuando un conductor solicita formalmente una revisión de su liquidación y esa solicitud es aceptada por un administrador. En ese caso, el administrador ingresa los nuevos ajustes manualmente y el sistema recalcula el valor final de forma automática, dejando siempre trazabilidad completa mediante auditoría.
 
 ## Technical Context
 
@@ -19,22 +17,19 @@ En ese caso, el administrador ingresa los nuevos ajustes manualmente y el sistem
 
 **Storage**: PostgreSQL 15
 
-
 **Testing**: JUnit 5, Mockito / Jest, React Testing Library
 
 **Target Platform**: AWS
 
-**Project Type**: Web application
+**Data Integrity**: Uso de `BigDecimal` para todos los cálculos monetarios.
 
-**Data Integrity**: Uso de`BigDecimal` para todos los cálculos monetarios.
-
-**Scheme Management**: Flyway para migraciones de PostgreSQL.
+**Schema Management**: Flyway para migraciones de PostgreSQL.
 
 **Security**: Spring Security + JWT para protección de endpoints financieros.
 
-**API Pattern**: Implementacion de DTOs para desacoplar la base de datos de la capa de presentación.
+**API Pattern**: DTOs para desacoplar la base de datos de la capa de presentación.
 
-**Performance Goals**: Procesamiento del cálculo en el servidor < 300ms
+**Performance Goals**: Procesamiento del cálculo en el servidor en menos de 300ms.
 
 **Constraints**: Consistencia transaccional ACID, restricción UNIQUE en base de datos para prevenir liquidaciones duplicadas por ruta, gestión segura de variables de entorno para la nube.
 
@@ -45,9 +40,9 @@ En ese caso, el administrador ingresa los nuevos ajustes manualmente y el sistem
 ### Documentation (this feature)
 
 ```text
-Specs/Calcular-liquidación/
-├── plan.md              # Este archivo 
-└── spec.md             # Especificación: Calcular liquidación.md
+specs/calcular-liquidacion/
+├── plan.md              # Este archivo
+└── spec.md              # Especificación: Calcular liquidación.md
 ```
 
 ### Source Code (repository root)
@@ -61,92 +56,46 @@ backend/
 │   │   │   ├── liquidacion/
 │   │   │   │   ├── CalcularLiquidacionUseCase.java
 │   │   │   │   ├── RecalcularLiquidacionUseCase.java
-│   │   │   │   └── LiquidacionStrategyFactoty.java
+│   │   │   │   └── CerrarRutaUseCase.java
 │   │   │
 │   │   └── dtos/                    # DTOs de entrada/salida
 │   │       ├── request/
-│   │       │   ├── AjusteDto
-│   │       │   ├── CierreRutaEventDTO
-│   │       │   ├── PaqueteDto
-│   │       │   └── RecalcularLiquidacionRequestDTO
 │   │       └── response/
-│   │           ├── AjusteResponseDto
-│   │           └── RecalcularLiquidacionRequestDTO
+│
 │   ├── domain/                      # Núcleo del negocio (LO MÁS IMPORTANTE)
 │   │   ├── models/                  # Entidades de negocio (sin JPA si quieres pureza)
-│   │   │   ├── Ajuste.java
-│   │   │   ├── Contrato.java
 │   │   │   ├── Liquidacion.java
-│   │   │   ├── Paquete.java
-│   │   │   ├── Ruta.java
+│   │   │   ├── Ajuste.java
 │   │   │   └── AuditoriaLiquidacion.java
-│   │   │
-│   │   ├── enums/ 
-│   │   │   ├── EstadoLiquidacion.java
-│   │   │   ├── EstadoPaquete.java
-│   │   │   ├── TipoAjuste.java
-│   │   │   ├── TipoContratacion.java
-│   │   │   ├── TipoOperacion.java
-│   │   │   └── TipoResponsable.java
 │   │   │
 │   │   ├── exceptions/              # Excepciones de negocio
 │   │   │   ├── ContratoNotFoundException.java
-│   │   │   ├── DomainException.java
-│   │   │   ├── LiquidacionNotFoundException.java
 │   │   │   └── LiquidacionDuplicadaException.java
 │   │   │
 │   │   ├── repositories/            # Interfaces (puertos)
 │   │   │   ├── LiquidacionRepository.java
-│   │   │   ├── AjusteRepository.java
-│   │   │   ├── AuditoriaLiquidacionRepository.java
 │   │   │   └── AjusteRepository.java
 │   │   │
 │   │   └── strategies/              # Reglas de negocio (core)
 │   │       ├── LiquidacionStrategy.java
 │   │       ├── PorParadaStrategy.java
 │   │       └── RecorridoCompletoStrategy.java
-│   │      
+│
 │   ├── infrastructure/              # Implementaciones técnicas
 │   │   ├── persistence/
 │   │   │   ├── entities/            # Entidades JPA (separadas del dominio)
-│   │   │   │    ├── AjusteEntity.java
-│   │   │   │    ├── ContratoEntity.java
-│   │   │   │    ├── LiquidacionEntity.java
-│   │   │   │    ├── InmutableBaseEntity.java
-│   │   │   │    ├── BaseEntity.java
-│   │   │   │    └── AuditoriaLiquidacionEntity.java  
-│   │   │   │
-│   │   │   ├── repositories/          # Spring Data JPA
-│   │   │   │    ├── AjusteJpaRepository.java
-│   │   │   │    ├── AjusteRepositoryImpl.java
-│   │   │   │    ├── AuditoriaLiquidacionJpaRepository.java
-│   │   │   │    ├── AuditoriaLiquidacionRepositoryImpl.java
-│   │   │   │    ├── ContratoJpaRepository.java
-│   │   │   │    ├── ContratoRepositoryImpl.java
-│   │   │   │    ├── LiquidacionJpaRepository.java
-│   │   │   │    └── LiquidacionRepositoryImpl.java
-│   │   │   │
-│   │   │   └── mapper/ 
-│   │   │       ├── AjusteMapper.java
-│   │   │       ├── ContratoMapper.java
-│   │   │       ├── LiquidacionMapper.java
-│   │   │       ├── RutaMapper.java
-│   │   │       └── AuditoriaLiquidacionMapper.java
+│   │   │   ├── repositories/        # Spring Data JPA
 │   │   │
 │   │   ├── web/
 │   │   │   ├── controllers/         # REST controllers
-│   │   │   │     ├── EventoController.java
-│   │   │   │     └── LiquidacionController.java
-│   │   │   │ 
 │   │   │   └── handlers/            # Manejo global de errores
-│   │   │       └── GlobalExceptionHandler.java
 │   │   │
-│   │   └── config/                  # Seguridad, CORS, etc
-│   │       ├── JwtAuthenticationFilter.java
-│   │       ├── JwtService.java
-│   │       └── SecurityConfig.java
-│   
+│   │   ├── config/                  # Seguridad, CORS, etc
+│   │   └── adapters/                # Mappers (DTO ↔ dominio)
 │
+│   └── shared/                      # Utilidades comunes
+│       ├── utils/
+│       └── constants/
 │
 ├── src/main/resources/
 │   ├── db/migration/
@@ -185,19 +134,18 @@ frontend/
 └── package.json
 ```
 
-**Structure Decision**: Se utiliza una arquitectura desacoplada con el patrón Strategy para el motor de cálculo, separando la lógica de cada tipo de contrato en clases independientes.
-Esto facilita agregar nuevos modelos de contratación en el futuro sin modificar el servicio principal.
+**Structure Decision**: Se utiliza una arquitectura desacoplada con el patrón Strategy para el motor de cálculo, separando la lógica de cada tipo de contrato en clases independientes. Esto facilita agregar nuevos modelos de contratación en el futuro sin modificar el servicio principal.
 
 ---
 
 ## Phase 1: Setup & DevOps Foundation (Shared Infrastructure)
 
-**Purpose**: Configuración inicial y preparación del entorno de desarrollo y despliegue.
+**Purpose**: Configuración inicial del proyecto y preparación del entorno de desarrollo y despliegue.
 
 - [ ] T001 Inicializar Spring Boot con dependencias: Web, Data JPA, Flyway, Validation, Security y el driver de PostgreSQL.
-- [ ] T002 Inicializar React con Vite y configurara Axios Interceptors para manejo de errores global de errores HTTP.
+- [ ] T002 Inicializar React con Vite y configurar Axios Interceptors para manejo global de errores HTTP.
 - [ ] T003 Crear Docker Compose para entorno local (App + DB) y configurar Dockerfiles para AWS.
-- [ ] T004  Definir el esquema inicial en el script de Flyway `V1__init_schema.sql`, incluyendo todas las tablas del módulo (`liquidaciones`, `ajustes`, `auditoria_liquidacion`) y sus restricciones. En particular, agregar una restricción `UNIQUE(id_ruta)` en la tabla `liquidaciones` para garantizar a nivel de base de datos que no existan liquidaciones duplicadas por ruta.
+- [ ] T004 Definir el esquema inicial en el script de Flyway `V1__init_schema.sql`, incluyendo todas las tablas del módulo (`liquidaciones`, `ajustes`, `auditoria_liquidacion`) y sus restricciones. En particular, agregar una restricción `UNIQUE(id_ruta)` en la tabla `liquidaciones` para garantizar a nivel de base de datos que no existan liquidaciones duplicadas por ruta.
 
 ---
 
@@ -215,28 +163,26 @@ Esto facilita agregar nuevos modelos de contratación en el futuro sin modificar
 - [ ] T007 Implementar los `JpaRepository` para cada entidad, incluyendo el método `existsByIdRuta(UUID idRuta)` en `LiquidacionRepository` para la validación de duplicados en la capa de servicio.
 - [ ] T008 Implementar un `@RestControllerAdvice` global que capture excepciones de negocio (`ContratoNotFoundException`, `LiquidacionDuplicadaException`, `SolicitudRevisionNoAceptadaException`) y errores de base de datos, retornando respuestas JSON estructuradas con código HTTP apropiado.
 
-
-**Checkpoint**:  El backend se conecta a PostgreSQL mediante variables de entorno, el esquema está creado con todas sus restricciones, y el frontend puede hacer llamadas básicas sin errores de CORS.
+**Checkpoint**: El backend se conecta a PostgreSQL mediante variables de entorno, el esquema está creado con todas sus restricciones, y el frontend puede hacer llamadas básicas sin errores de CORS.
 
 ---
 
-## Phase 3: User Story 1 - Calcular liquidación automáticamente (Priority: P1)
+## Phase 3: User Story 1 — Calcular liquidación automáticamente (Prioridad: P1)
 
 **Goal**: Implementar el motor de cálculo automático que se activa al recibir el evento de cierre de ruta, sin intervención de ningún usuario. React no dispara este cálculo; solo consume el resultado para mostrarlo.
 
-**Independent Test**: Simular el envío del evento de cierre de ruta mediante Postman al endpoint `POST /api/eventos/cierre-ruta` con un payload válido.
-Verificar que se genera correctamente el registro de liquidación en PostgreSQL con el valor esperado y que se crea el registro de auditoría correspondiente, sin ninguna acción adicional del usuario.
+**Independent Test**: Simular el envío del evento de cierre de ruta mediante Postman al endpoint `POST /api/eventos/cierre-ruta` con un payload válido. Verificar que se genera correctamente el registro de liquidación en PostgreSQL con el valor esperado y que se crea el registro de auditoría correspondiente, sin ninguna acción adicional del usuario.
 
-### Tests for User Story 1
+### Tests para User Story 1
 
-- [ ] T009 [P] [US1]  Test unitario en JUnit 5 para `PorParadaStrategy`: verificar que el cálculo aplica correctamente los porcentajes según el estado de cada parada (exitosa al 100%, fallida por cliente al porcentaje configurado, fallida por transportista al 0% + penalización).
+- [ ] T009 [P] [US1] Test unitario en JUnit 5 para `PorParadaStrategy`: verificar que el cálculo aplica correctamente los porcentajes según el estado de cada parada (exitosa al 100%, fallida por cliente al porcentaje configurado, fallida por transportista al 0%).
 - [ ] T010 [P] [US1] Test unitario en JUnit 5 para `RecorridoCompletoStrategy`: verificar que se asigna el valor fijo del contrato cuando la ruta cumple los criterios de completitud.
 - [ ] T011 [P] [US1] Test de integración con `@DataJpaTest` para confirmar que la restricción de duplicados lanza `LiquidacionDuplicadaException` cuando se intenta calcular una segunda liquidación para la misma ruta.
 - [ ] T012 [P] [US1] Test para el edge case: el contrato referenciado en el evento no existe → el sistema lanza `ContratoNotFoundException` y no genera ningún registro de liquidación.
 - [ ] T013 [P] [US1] Test para el edge case: la fecha de cierre de la ruta es anterior a la fecha de inicio → el sistema rechaza el evento y registra el error en los logs sin crear liquidación.
 - [ ] T014 [P] [US1] Test para el edge case: un paquete no tiene regla de pago aplicable → el sistema omite ese paquete, continúa con los demás y registra el paquete como "sin regla aplicable".
 
-### Implementation for User Story 1
+### Implementation para User Story 1
 
 - [ ] T015 [P] [US1] Implementar la interfaz `ContratoStrategy` con el método `calcular(Ruta ruta, Contrato contrato): BigDecimal` y sus dos implementaciones:
     - `PorParadaStrategy`: itera las paradas, aplica el porcentaje de pago según el responsable de la falla y multiplica por la tarifa por parada.
@@ -248,20 +194,19 @@ Verificar que se genera correctamente el registro de liquidación en PostgreSQL 
 
 ---
 
-## Phase 4: User Story 2 - Recalcular liquidación (Priority: P2)
+## Phase 4: User Story 2 — Recalcular liquidación (Prioridad: P2)
 
-**Goal**:  Permitir al administrador ingresar nuevos ajustes sobre una liquidación existente y ordenar el recálculo, pero únicamente cuando exista una solicitud de revisión aceptada para esa liquidación. El sistema debe validar ese estado antes de permitir cualquier acción.
+**Goal**: Permitir al administrador ingresar nuevos ajustes sobre una liquidación existente y ordenar el recálculo, pero únicamente cuando exista una solicitud de revisión aceptada para esa liquidación. El sistema debe validar ese estado antes de permitir cualquier acción.
 
-**Independent Test**: Desde la UI de React, como administrador, intentar acceder al panel de recálculo de una liquidación sin solicitud aceptada y verificar que el sistema lo bloquea.
-Luego, con una solicitud aceptada, ingresar un ajuste con motivo obligatorio, presionar "Recalcular" y confirmar en PostgreSQL que el valor de la liquidación fue actualizado y que se creó un nuevo registro en `auditoria_liquidacion` con el valor anterior, el valor nuevo y el responsable.
+**Independent Test**: Desde la UI de React, como administrador, intentar acceder al panel de recálculo de una liquidación sin solicitud aceptada y verificar que el sistema lo bloquea. Luego, con una solicitud aceptada, ingresar un ajuste con motivo obligatorio, presionar "Recalcular" y confirmar en PostgreSQL que el valor de la liquidación fue actualizado y que se creó un nuevo registro en `auditoria_liquidacion` con el valor anterior, el valor nuevo y el responsable.
 
-### Tests for User Story 2
+### Tests para User Story 2
 
 - [ ] T020 [P] [US2] Test unitario para verificar que `CalculationService.recalcular()` lanza `SolicitudRevisionNoAceptadaException` cuando no existe una solicitud de revisión aceptada para la liquidación, impidiendo el recálculo.
 - [ ] T021 [P] [US2] Test unitario para verificar que al ejecutar el recálculo exitoso, el registro previo de la liquidación (valor anterior) queda íntegro en `auditoria_liquidacion` junto con el valor nuevo, la fecha y el responsable.
 - [ ] T022 [US2] Test de componente en React para confirmar que el formulario de ajustes no se muestra si no hay solicitud de revisión aceptada, y que el campo "Motivo del ajuste" es obligatorio antes de habilitar el botón "Recalcular".
 
-### Implementation for User Story 2
+### Implementation para User Story 2
 
 - [ ] T023 [P] [US2] Implementar en `CalculationService.java` el método `recalcularLiquidacion(UUID idLiquidacion, List<AjusteDTO> nuevosAjustes, UUID idAdmin)`, que: verifica que existe una solicitud de revisión aceptada para esa liquidación, aplica los nuevos ajustes al cálculo base, actualiza el valor final y registra en `AuditoriaLiquidacion` el valor anterior, el valor nuevo, la fecha y el administrador responsable.
 - [ ] T024 [P] [US2] Crear el endpoint `PUT /api/liquidaciones/{id}/recalcular` en el controlador, protegido para `ROLE_ADMIN` únicamente.
@@ -273,14 +218,14 @@ Luego, con una solicitud aceptada, ingresar un ajuste con motivo obligatorio, pr
 
 - [ ] T026 Configurar perfiles de Spring Boot (`application-dev.yml`, `application-prod.yml`) con variables de entorno para credenciales de AWS RDS.
 - [ ] T027 Añadir Swagger / OpenAPI para documentar los endpoints y facilitar la integración con el equipo de frontend y con el Módulo de Rutas y Flotas.
-- [ ] T028  Implementar estados de carga en React (skeleton loaders) mientras se espera la respuesta del backend tras el recálculo.
+- [ ] T028 Implementar estados de carga en React (skeleton loaders) mientras se espera la respuesta del backend tras el recálculo.
 - [ ] T029 Agregar índices en PostgreSQL sobre las columnas `id_ruta` y `fecha_calculo` en la tabla `liquidaciones` para optimizar las consultas de búsqueda.
 
 ---
 
 ## Dependencies & Execution Order
 
-**Schema y restricciones (Fase 1 y 2)**: El script de Flyway con la restricción `UNIQUE(id_ruta)` y la entidad `AuditoriaLiquidacion` deben existir desde el inicio, ya que el primer cálculo ya genera auditoría. No pueden agregarse después.
+**Schema y restricciones (Phase 1 y 2)**: El script de Flyway con la restricción `UNIQUE(id_ruta)` y la entidad `AuditoriaLiquidacion` deben existir desde el inicio, ya que el primer cálculo ya genera auditoría. No pueden agregarse después.
 
 **Estrategias antes del servicio**: Las clases `PorParadaStrategy` y `RecorridoCompletoStrategy` deben implementarse y probarse con JUnit antes de integrarlas en `CalculationService`.
 
