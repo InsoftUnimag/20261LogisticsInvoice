@@ -12,9 +12,9 @@ public class ParadaResponseMapper {
 
         return ParadaResponseDTO.builder()
                 .paradaId(p.getParadaId())
-                .estado(p.getEstado() != null ? p.getEstado().getLabel() : null)
-                .motivoFalla(p.getMotivoFalla() != null ? p.getMotivoFalla().getLabel() : null)
-                .responsable(p.getResponsable() != null ? p.getResponsable().getLabel() : null)
+                .estado(p.getEstado() != null ? String.valueOf(p.getEstado()) : null)
+                .motivoFalla(p.getMotivoFalla() != null ? String.valueOf(p.getMotivoFalla()) : null)
+                .responsable(p.getResponsable() != null ? String.valueOf(p.getResponsable()) : null)
                 .build();
     }
 }
