@@ -1,9 +1,9 @@
 package com.logistica.infrastructure.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.logistica.application.dtos.request.ContratoRequestDTO;
-import com.logistica.application.dtos.response.ContratoResponseDTO;
-import com.logistica.domain.enums.TipoContrato;
+import com.logistica.contratos.application.dtos.request.ContratoRequestDTO;
+import com.logistica.contratos.application.dtos.response.ContratoResponseDTO;
+import com.logistica.contratos.domain.enums.TipoContrato;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

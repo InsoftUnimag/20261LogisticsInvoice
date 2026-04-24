@@ -1,7 +1,7 @@
 package com.logistica.application.validators;
 
-import com.logistica.application.dtos.request.ContratoRequestDTO;
-import com.logistica.domain.enums.TipoContrato;
+import com.logistica.contratos.application.dtos.request.ContratoRequestDTO;
+import com.logistica.contratos.domain.enums.TipoContrato;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

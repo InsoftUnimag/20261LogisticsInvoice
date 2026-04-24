@@ -4,7 +4,175 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e457e06d-640c-4ef3-9102-be912fd740e3" name="Changes" comment="cambios finales, agregacion de test (funcionales), mejora de logica y arquitectura, se expandio ciertas cosas para la creacion de un puerto que se recibe con jackson, implementacion total de cierre de ruta" />
+    <list default="true" id="e457e06d-640c-4ef3-9102-be912fd740e3" name="Changes" comment="test de implementacion de base de datos funcionales">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__ch_qos_logback_logback_classic_1_4_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__ch_qos_logback_logback_core_1_4_14.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_classmate_1_6_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_annotations_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_core_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_core_jackson_databind_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_dataformat_jackson_dataformat_toml_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jdk8_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_datatype_jackson_datatype_jsr310_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_fasterxml_jackson_module_jackson_module_parameter_names_2_15_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_code_gson_gson_2_10_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_h2database_h2_2_2_224.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_jayway_jsonpath_json_path_2_9_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_sun_istack_istack_commons_runtime_4_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_vaadin_external_google_android_json_0_0_20131108_vaadin1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_zaxxer_HikariCP_5_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_micrometer_micrometer_commons_1_12_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_micrometer_micrometer_observation_1_12_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__io_smallrye_jandex_3_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_activation_jakarta_activation_api_2_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_annotation_jakarta_annotation_api_2_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_inject_jakarta_inject_api_2_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_persistence_jakarta_persistence_api_3_1_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_transaction_jakarta_transaction_api_2_0_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_validation_jakarta_validation_api_3_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__jakarta_xml_bind_jakarta_xml_bind_api_4_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_14_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_agent_1_14_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_accessors_smart_2_5_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_minidev_json_smart_2_5_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_antlr_antlr4_runtime_4_13_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_api_2_21_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_logging_log4j_log4j_to_slf4j_2_21_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_core_10_1_19.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_el_10_1_19.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_tomcat_embed_tomcat_embed_websocket_10_1_19.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apiguardian_apiguardian_api_1_1_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_aspectj_aspectjweaver_1_9_21.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_assertj_assertj_core_3_24_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_awaitility_awaitility_4_2_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_checkerframework_checker_qual_3_31_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_eclipse_angus_angus_activation_2_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_flywaydb_flyway_core_9_22_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_flywaydb_flyway_database_postgresql_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_glassfish_jaxb_jaxb_core_4_0_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_glassfish_jaxb_jaxb_runtime_4_0_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_glassfish_jaxb_txw2_4_0_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hibernate_common_hibernate_commons_annotations_6_0_6_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hibernate_orm_hibernate_core_6_4_4_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hibernate_validator_hibernate_validator_8_0_1_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_jboss_logging_jboss_logging_3_5_3_Final.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_5_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_api_5_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_engine_5_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_params_5_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_platform_junit_platform_commons_1_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_platform_junit_platform_engine_1_10_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_core_5_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_junit_jupiter_5_7_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_objenesis_objenesis_3_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_opentest4j_opentest4j_1_3_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_ow2_asm_asm_9_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_postgresql_postgresql_42_6_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_projectlombok_lombok_1_18_30.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_skyscreamer_jsonassert_1_5_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_jul_to_slf4j_2_0_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_slf4j_api_2_0_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_autoconfigure_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_aop_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_data_jpa_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_jdbc_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_json_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_logging_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_security_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_test_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_tomcat_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_validation_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_starter_web_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_test_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_boot_spring_boot_test_autoconfigure_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_data_spring_data_commons_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_data_spring_data_jpa_3_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_security_spring_security_config_6_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_security_spring_security_core_6_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_security_spring_security_crypto_6_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_security_spring_security_test_6_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_security_spring_security_web_6_2_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_aop_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_aspects_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_beans_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_context_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_core_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_expression_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_jcl_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_jdbc_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_orm_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_test_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_tx_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_web_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_springframework_spring_webmvc_6_1_5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_xmlunit_xmlunit_core_2_9_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_yaml_snakeyaml_2_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/logistica-backend.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/logistica-backend.test.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/models/Contrato.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/models/Transportista.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.14/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/backend.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/logistica-backend.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/logistica-backend.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/dtos/request/ContratoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/dtos/request/ContratoRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/dtos/response/ContratoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/dtos/response/ContratoResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/mappers/ContratoResponseMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/mappers/ContratoResponseMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/usecases/contrato/BuscarContratoUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/usecases/contrato/BuscarContratoUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/usecases/contrato/CrearContratoUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/usecases/contrato/CrearContratoUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/usecases/contrato/ListarContratosUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/usecases/contrato/ListarContratosUseCase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/validators/FechasContratoValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/validators/FechasContratoValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/validators/PrecioCondicionalValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/validators/PrecioCondicionalValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/validators/ValidFechasContrato.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/validators/ValidFechasContrato.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/application/validators/ValidPrecioCondicional.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/application/validators/ValidPrecioCondicional.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/enums/TipoContrato.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/enums/TipoContrato.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/exceptions/ContratoInvalidoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/exceptions/ContratoInvalidoException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/exceptions/ContratoYaExisteException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/exceptions/ContratoYaExisteException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/exceptions/RecursoNoEncontradoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/exceptions/RecursoNoEncontradoException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/models/Contrato.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/models/Seguro.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/models/Seguro.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/models/Usuario.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/models/Vehiculo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/models/Vehiculo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/repositories/ContratoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/repositories/ContratoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/repositories/SeguroRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/repositories/SeguroRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/repositories/UsuarioRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/repositories/UsuarioRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/repositories/VehiculoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/repositories/VehiculoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/validators/FechasContratoValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/validators/FechasContratoValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/validators/PrecioCondicionalValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/validators/PrecioCondicionalValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/validators/ValidFechasContrato.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/validators/ValidFechasContrato.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/domain/validators/ValidPrecioCondicional.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/domain/validators/ValidPrecioCondicional.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/adapters/ContratoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/adapters/ContratoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/entities/ContratoEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/entities/ContratoEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/entities/SeguroEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/entities/SeguroEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/entities/UsuarioEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/entities/UsuarioEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/entities/VehiculoEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/entities/VehiculoEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/ContratoJpaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/ContratoJpaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/ContratoRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/ContratoRepositoryImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/SeguroJpaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/SeguroJpaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/SeguroRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/SeguroRepositoryImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/UsuarioJpaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/UsuarioJpaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/UsuarioRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/UsuarioRepositoryImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/VehiculoJpaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/VehiculoJpaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/persistence/repositories/VehiculoRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/persistence/repositories/VehiculoRepositoryImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/web/controllers/ContratoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/web/controllers/ContratoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/web/handlers/ErrorResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/web/handlers/ErrorResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/logistica/infrastructure/web/handlers/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/logistica/contratos/infrastructure/web/handlers/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/application/usecases/contrato/CrearContratoUseCaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/application/usecases/contrato/CrearContratoUseCaseTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/application/validators/FechasContratoValidatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/application/validators/FechasContratoValidatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/application/validators/PrecioCondicionalValidatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/application/validators/PrecioCondicionalValidatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/domain/validators/FechasContratoValidatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/domain/validators/FechasContratoValidatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/domain/validators/PrecioCondicionalValidatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/domain/validators/PrecioCondicionalValidatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/logistica/infrastructure/web/ContratoControllerIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/logistica/infrastructure/web/ContratoControllerIntegrationTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,7 +191,12 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="logistica-backend" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -70,36 +243,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.ClasificacionRutaServiceTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ClasificacionRutaServiceTest.lanzaExcepcionCuandoParadaEsNull.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProcesarRutaCerradaUseCaseTest.debe_publicar_evento_por_contrato_nulo.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProcesarRutaCerradaUseCaseTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ProcesarRutaCerradaUseCaseTest.lanza_excepcion_si_dto_es_null.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaCerradaEventDTOMappingTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaCerradaEventDTOMappingTest.paradas_se_deserializa_como_lista_correcta.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaControllerTest.debe_obtener_ruta_ok.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaControllerTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaValidatorTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.RutaValidatorTest.lanza_excepcion_si_parada_es_null_en_lista.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/LUIS/IdeaProjects/20261LogisticsInvoice/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.ClasificacionRutaServiceTest.executor": "Run",
+    "Gradle.ClasificacionRutaServiceTest.lanzaExcepcionCuandoParadaEsNull.executor": "Run",
+    "Gradle.ProcesarRutaCerradaUseCaseTest.debe_publicar_evento_por_contrato_nulo.executor": "Run",
+    "Gradle.ProcesarRutaCerradaUseCaseTest.executor": "Run",
+    "Gradle.ProcesarRutaCerradaUseCaseTest.lanza_excepcion_si_dto_es_null.executor": "Run",
+    "Gradle.RutaCerradaEventDTOMappingTest.executor": "Run",
+    "Gradle.RutaCerradaEventDTOMappingTest.paradas_se_deserializa_como_lista_correcta.executor": "Run",
+    "Gradle.RutaControllerTest.debe_obtener_ruta_ok.executor": "Run",
+    "Gradle.RutaControllerTest.executor": "Run",
+    "Gradle.RutaValidatorTest.executor": "Run",
+    "Gradle.RutaValidatorTest.lanza_excepcion_si_parada_es_null_en_lista.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "feature/mod3-Registrar-Modelo-Contratacion",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/LUIS/IdeaProjects/20261LogisticsInvoice/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -242,9 +416,9 @@
       <list>
         <item itemvalue="Gradle.RutaControllerTest.debe_obtener_ruta_ok" />
         <item itemvalue="Gradle.RutaControllerTest" />
-        <item itemvalue="Gradle.ProcesarRutaCerradaUseCaseTest" />
-        <item itemvalue="Gradle.ProcesarRutaCerradaUseCaseTest.debe_publicar_evento_por_contrato_nulo" />
         <item itemvalue="Gradle.ProcesarRutaCerradaUseCaseTest.lanza_excepcion_si_dto_es_null" />
+        <item itemvalue="Gradle.ProcesarRutaCerradaUseCaseTest.debe_publicar_evento_por_contrato_nulo" />
+        <item itemvalue="Gradle.ProcesarRutaCerradaUseCaseTest" />
       </list>
     </recent_temporary>
   </component>
