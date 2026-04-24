@@ -1,11 +1,12 @@
 package com.logistica.domain.services;
 
-import com.logistica.domain.enums.EstadoParada;
-import com.logistica.domain.enums.MotivoFalla;
-import com.logistica.domain.enums.ResponsableFalla;
-import com.logistica.domain.exceptions.ParadaInvalidaException;
-import com.logistica.domain.models.Parada;
-import com.logistica.domain.models.Ruta;
+import com.logistica.ruta.domain.enums.EstadoParada;
+import com.logistica.ruta.domain.enums.MotivoFalla;
+import com.logistica.ruta.domain.enums.ResponsableFalla;
+import com.logistica.ruta.domain.exceptions.ParadaInvalidaException;
+import com.logistica.ruta.domain.models.Parada;
+import com.logistica.ruta.domain.models.Ruta;
+import com.logistica.ruta.domain.services.ClasificacionRutaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

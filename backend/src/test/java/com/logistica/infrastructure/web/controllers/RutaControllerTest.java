@@ -1,16 +1,16 @@
 package com.logistica.infrastructure.web.controllers;
 
-import com.logistica.application.dtos.response.RutaProcesadaResponseDTO;
-import com.logistica.application.usecases.ruta.ConsultarRutaUseCase;
-import com.logistica.domain.exceptions.RutaNotFoundException;
-import com.logistica.infrastructure.config.SecurityConfig;
+import com.logistica.ruta.application.dtos.response.RutaProcesadaResponseDTO;
+import com.logistica.ruta.application.usecases.ruta.ConsultarRutaUseCase;
+import com.logistica.ruta.domain.exceptions.RutaNotFoundException;
+import com.logistica.ruta.infrastructure.config.SecurityConfig;
+import com.logistica.ruta.infrastructure.web.controllers.RutaController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;

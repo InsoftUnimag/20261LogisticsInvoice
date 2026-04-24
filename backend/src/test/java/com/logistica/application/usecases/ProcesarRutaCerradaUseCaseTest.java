@@ -1,22 +1,24 @@
 package com.logistica.application.usecases;
 
-import com.logistica.application.dtos.request.*;
-import com.logistica.application.mappers.RutaEventMapper;
-import com.logistica.application.usecases.ruta.ProcesarRutaCerradaUseCase;
-import com.logistica.domain.enums.EstadoParada;
-import com.logistica.domain.enums.EstadoProcesamiento;
-import com.logistica.domain.enums.TipoAlertaRuta;
-import com.logistica.domain.events.RutaCerradaProcesadaEvent;
-import com.logistica.domain.exceptions.RutaInvalidaException;
-import com.logistica.domain.models.Parada;
-import com.logistica.domain.models.Ruta;
-import com.logistica.domain.repositories.RutaRepository;
-import com.logistica.domain.repositories.TarifaRepository;
-import com.logistica.domain.services.ClasificacionRutaService;
-import com.logistica.domain.validators.RutaValidator;
+import com.logistica.ruta.application.dtos.request.ConductorEventDTO;
+import com.logistica.ruta.application.dtos.request.ParadaEventDTO;
+import com.logistica.ruta.application.dtos.request.RutaCerradaEventDTO;
+import com.logistica.ruta.application.dtos.request.VehiculoEventDTO;
+import com.logistica.ruta.application.mappers.RutaEventMapper;
+import com.logistica.ruta.application.usecases.ruta.ProcesarRutaCerradaUseCase;
+import com.logistica.ruta.domain.enums.EstadoParada;
+import com.logistica.ruta.domain.enums.EstadoProcesamiento;
+import com.logistica.ruta.domain.enums.TipoAlertaRuta;
+import com.logistica.ruta.domain.events.RutaCerradaProcesadaEvent;
+import com.logistica.ruta.domain.exceptions.RutaInvalidaException;
+import com.logistica.ruta.domain.models.Parada;
+import com.logistica.ruta.domain.models.Ruta;
+import com.logistica.ruta.domain.repositories.RutaRepository;
+import com.logistica.ruta.domain.repositories.TarifaRepository;
+import com.logistica.ruta.domain.services.ClasificacionRutaService;
+import com.logistica.ruta.domain.validators.RutaValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,9 +87,9 @@ class ProcesarRutaCerradaUseCaseTest {
     @DisplayName("Debe persistir la ruta con el mismo número de paradas que el evento")
     void debe_persistir_mismo_numero_de_paradas_que_el_evento() {
         UUID rutaId = UUID.randomUUID();
-        List<com.logistica.domain.models.Parada> domainParadas = List.of(
-                mock(com.logistica.domain.models.Parada.class),
-                mock(com.logistica.domain.models.Parada.class)
+        List<Parada> domainParadas = List.of(
+                mock(Parada.class),
+                mock(Parada.class)
         );
         RutaCerradaEventDTO dto = buildEvento(rutaId, "Recorrido completo", "MOTO", List.of(parada("EXITOSA", null), parada("FALLIDA", "CLIENTE_AUSENTE")));
         Ruta rutaMock = buildRutaMock(rutaId, "Recorrido completo", "MOTO", domainParadas);
@@ -110,7 +111,7 @@ class ProcesarRutaCerradaUseCaseTest {
     void debe_marcar_revision_y_publicar_evento_por_contrato_nulo() {
         UUID rutaId = UUID.randomUUID();
         RutaCerradaEventDTO dto = buildEvento(rutaId, null, "MOTO", List.of(parada("EXITOSA", null)));
-        Ruta rutaMock = buildRutaMock(rutaId, null, "MOTO", List.of(mock(com.logistica.domain.models.Parada.class)));
+        Ruta rutaMock = buildRutaMock(rutaId, null, "MOTO", List.of(mock(Parada.class)));
 
         when(rutaRepository.existsByRutaId(rutaId)).thenReturn(false);
         when(rutaEventMapper.toDomain(any(RutaCerradaEventDTO.class))).thenReturn(rutaMock);
@@ -138,7 +139,7 @@ class ProcesarRutaCerradaUseCaseTest {
     void debe_marcar_revision_y_publicar_evento_por_vehiculo_desconocido() {
         UUID rutaId = UUID.randomUUID();
         RutaCerradaEventDTO dto = buildEvento(rutaId, "Recorrido completo", "BICICLETA", List.of(parada("EXITOSA", null)));
-        Ruta rutaMock = buildRutaMock(rutaId, "Recorrido completo", "BICICLETA", List.of(mock(com.logistica.domain.models.Parada.class)));
+        Ruta rutaMock = buildRutaMock(rutaId, "Recorrido completo", "BICICLETA", List.of(mock(Parada.class)));
 
         when(rutaRepository.existsByRutaId(rutaId)).thenReturn(false);
         when(rutaEventMapper.toDomain(any(RutaCerradaEventDTO.class))).thenReturn(rutaMock);
@@ -239,7 +240,7 @@ class ProcesarRutaCerradaUseCaseTest {
         return evento;
     }
 
-    private Ruta buildRutaMock(UUID rutaId, String modeloContrato, String tipoVehiculo, List<com.logistica.domain.models.Parada> paradas) {
+    private Ruta buildRutaMock(UUID rutaId, String modeloContrato, String tipoVehiculo, List<Parada> paradas) {
         return Ruta.builder()
                 .rutaId(rutaId)
                 .modeloContrato(modeloContrato)

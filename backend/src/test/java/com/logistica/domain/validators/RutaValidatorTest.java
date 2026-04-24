@@ -1,10 +1,11 @@
 package com.logistica.domain.validators;
 
-import com.logistica.domain.enums.EstadoParada;
-import com.logistica.domain.enums.MotivoFalla;
-import com.logistica.domain.exceptions.RutaInvalidaException;
-import com.logistica.domain.models.Parada;
-import com.logistica.domain.models.Ruta;
+import com.logistica.ruta.domain.enums.EstadoParada;
+import com.logistica.ruta.domain.enums.MotivoFalla;
+import com.logistica.ruta.domain.exceptions.RutaInvalidaException;
+import com.logistica.ruta.domain.models.Parada;
+import com.logistica.ruta.domain.models.Ruta;
+import com.logistica.ruta.domain.validators.RutaValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
