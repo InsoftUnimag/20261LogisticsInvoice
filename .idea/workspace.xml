@@ -4,24 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e9b87a-fadc-44c3-8b48-1742cb0ad6f5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="17e9b87a-fadc-44c3-8b48-1742cb0ad6f5" name="Changes" comment="Visualizar liquidacion nuevo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/security/UsuarioAutenticado.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/security/UsuarioAutenticado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/BuscarLiquidacionesUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/BuscarLiquidacionesUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/ListarLiquidacionesUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/ListarLiquidacionesUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/ObtenerDetalleLiquidacionUseCase.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/application/usecases/liquidacion/ObtenerDetalleLiquidacionUseCase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/domain/repositories/LiquidacionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/domain/repositories/LiquidacionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/adapters/LiquidacionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/adapters/LiquidacionMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/persistence/repositories/LiquidacionRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/persistence/repositories/LiquidacionRepositoryImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/web/controllers/LiquidacionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/web/controllers/LiquidacionController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/web/handlers/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/logistica/infrastructure/web/handlers/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/BuscarLiquidacionesUseCaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/BuscarLiquidacionesUseCaseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/ListarLiquidacionesUseCaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/ListarLiquidacionesUseCaseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/ObtenerDetalleLiquidacionUseCaseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/logistica/application/usecases/ObtenerDetalleLiquidacionUseCaseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/resources/application-test.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/resources/application-test.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Specs/Visualizar liquidación/plan-visualizar-liquidacion.md" beforeDir="false" afterPath="$PROJECT_DIR$/Specs/Visualizar liquidación/plan-visualizar-liquidacion.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,8 +152,25 @@
       <workItem from="1776909960428" duration="51000" />
       <workItem from="1776910025110" duration="1705000" />
       <workItem from="1777065837131" duration="823000" />
-      <workItem from="1777066717493" duration="2422000" />
+      <workItem from="1777066717493" duration="7160000" />
     </task>
+    <task id="LOCAL-00001" summary="Visualizar liquidacion nuevo">
+      <option name="closed" value="true" />
+      <created>1777069314555</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1777069314556</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Visualizar liquidacion nuevo">
+      <option name="closed" value="true" />
+      <created>1777069838964</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1777069838964</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,6 +198,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Visualizar liquidacion nuevo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Visualizar liquidacion nuevo" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
