@@ -18,24 +18,16 @@ public class ParadaEventMapper {
             throw new IllegalArgumentException("paradaId es obligatorio");
         }
 
-        EstadoParada estado;
-        try {
-            estado = EstadoParada.valueOf(String.valueOf(dto.getEstado()));
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Estado inválido: " + dto.getEstado());
-        }
-
         MotivoFalla motivo = null;
-
-        if (dto.getMotivoNoEntrega() != null) {
+        if (dto.getMotivoNoEntrega() != null && !dto.getMotivoNoEntrega().isBlank()) {
             motivo = MotivoFalla.fromValue(dto.getMotivoNoEntrega());
         }
 
-
-        return Parada.crear(
-                dto.getParadaId(),
-                estado,
-                motivo
-        );
+        return Parada.builder()
+                .paradaId(dto.getParadaId())
+                .paqueteId(dto.getPaqueteId())
+                .estado(dto.getEstado())
+                .motivoFalla(motivo)
+                .build();
     }
 }

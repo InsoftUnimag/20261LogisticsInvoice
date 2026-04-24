@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Setter
 @Builder
 public class Ruta {
     private UUID rutaId;
@@ -24,8 +23,23 @@ public class Ruta {
     private LocalDateTime fechaCierre;
     private EstadoProcesamiento estadoProcesamiento;
 
-    @Builder.Default
-    private List<Parada> paradas = new ArrayList<>();
+    @Singular
+    private List<Parada> paradas ;
+    public Ruta conEstado(EstadoProcesamiento nuevoEstado) {
+        return Ruta.builder()
+                .rutaId(this.rutaId)
+                .transportista(this.transportista)
+                .vehiculoId(this.vehiculoId)
+                .tipoVehiculo(this.tipoVehiculo)
+                .modeloContrato(this.modeloContrato)
+                .fechaInicioTransito(this.fechaInicioTransito)
+                .fechaCierre(this.fechaCierre)
+                .estadoProcesamiento(nuevoEstado)
+                .paradas(this.paradas)
+                .build();
+    }
+
+
 
 
 }

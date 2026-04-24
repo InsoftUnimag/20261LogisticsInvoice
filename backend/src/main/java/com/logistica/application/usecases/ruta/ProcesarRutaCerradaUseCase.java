@@ -44,43 +44,46 @@ public class ProcesarRutaCerradaUseCase {
 
         log.info("Iniciando procesamiento de RUTA_CERRADA para ruta_id: {}", rutaId);
 
-
+        // 1. Idempotencia
         if (rutaRepository.existsByRutaId(rutaId)) {
             log.info("Evento duplicado ignorado para ruta_id: {}", rutaId);
             return;
         }
 
-
+        // 2. DTO -> DOMAIN
         Ruta ruta = rutaEventMapper.toDomain(evento);
 
+        if (ruta.getParadas() == null || ruta.getParadas().isEmpty()) {
+            throw new IllegalArgumentException("La ruta debe tener al menos un paquete");
+        }
 
+        // 3. Estado inicial
         EstadoProcesamiento estado = EstadoProcesamiento.OK;
 
-
+        // 4. Validaciones de negocio básicas
         if (ruta.getModeloContrato() == null) {
             log.warn("Contrato nulo para ruta_id: {}", rutaId);
             eventPublisher.publishEvent(
                     new RutaCerradaProcesadaEvent(
-                            rutaId,
-                            EstadoProcesamiento.REQUIERE_REVISION,
-                            TipoAlertaRuta.CONTRATO_NULO,
-                            "El modelo de contrato no fue encontrado",
+                            rutaId, 
+                            EstadoProcesamiento.REQUIERE_REVISION, 
+                            TipoAlertaRuta.CONTRATO_NULO, 
+                            "El modelo de contrato no fue encontrado", 
                             LocalDateTime.now()
                     )
             );
             estado = EstadoProcesamiento.REQUIERE_REVISION;
         }
-
 
         if (ruta.getTipoVehiculo() == null || !TipoVehiculo.isKnown(ruta.getTipoVehiculo())) {
             log.warn("Tipo de vehículo no reconocido o nulo en ruta_id: {}", rutaId);
 
             eventPublisher.publishEvent(
                     new RutaCerradaProcesadaEvent(
-                            rutaId,
-                            EstadoProcesamiento.REQUIERE_REVISION,
-                            TipoAlertaRuta.VEHICULO_DESCONOCIDO,
-                            "El tipo de vehículo es desconocido o nulo: " + ruta.getTipoVehiculo(),
+                            rutaId, 
+                            EstadoProcesamiento.REQUIERE_REVISION, 
+                            TipoAlertaRuta.VEHICULO_DESCONOCIDO, 
+                            "El tipo de vehículo es desconocido o nulo: " + ruta.getTipoVehiculo(), 
                             LocalDateTime.now()
                     )
             );
@@ -88,16 +91,16 @@ public class ProcesarRutaCerradaUseCase {
             estado = EstadoProcesamiento.REQUIERE_REVISION;
         }
 
-
+        // 5. Lógica de negocio (delegada)
         clasificacionRutaService.clasificar(ruta);
 
+        // 6. Set estado final
+        ruta = ruta.conEstado(estado);
 
-        ruta.setEstadoProcesamiento(estado);
-
-
+        // 7. Validación final
         rutaValidator.validar(ruta, ruta.getParadas().size());
 
-
+        // 8. Persistencia
         rutaRepository.guardar(ruta);
 
         long duracion = System.currentTimeMillis() - inicio;
