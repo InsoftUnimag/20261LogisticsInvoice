@@ -5,9 +5,7 @@
 
 ## Summary
 
-Esta funcionalidad establece la integración sincrónica entre el Módulo Financiero y el Módulo de Gestión de Paquetes. El sistema realizará peticiones HTTP GET automáticamente al iniciar un proceso de liquidación, para obtener el estado oficial de cada paquete de una ruta cerrada. Ningún usuario dispara esta consulta manualmente.
-
-El sistema incluye un motor de mapeo que transforma los estados operativos (Entregado, Devuelto, Dañado, Extraviado) en reglas porcentuales de pago, e implementa políticas de resiliencia (reintentos y timeouts) para tolerar fallos de red. Toda interacción queda registrada en auditoría de forma consistente, priorizando la integridad del log sobre el rendimiento.
+Esta funcionalidad establece la integración sincrónica entre el Módulo Financiero y el Módulo de Gestión de Paquetes. El sistema realizará peticiones HTTP GET para obtener el estado oficial de cada paquete de una ruta cerrada. Incluye un motor de mapeo para transformar estados operativos ("Entregado", "Devuelto") en reglas porcentuales de pago, e implementa políticas de resiliencia (reintentos y timeouts) para asegurar la tolerancia a fallos en la red. Toda interacción será debidamente auditada.
 
 ## Technical Context
 
@@ -23,9 +21,9 @@ El sistema incluye un motor de mapeo que transforma los estados operativos (Entr
 
 **Project Type**: Web application (Integración de Microservicios)
 
-**Performance Goals**: 95% de las peticiones completadas en menos de 500ms (SC-003).
+**Performance Goals**: 95% de las peticiones completadas en < 500ms
 
-**Constraints**: Timeout estricto de 2 segundos con política de reintentos antes de marcar como "Pendiente por Sincronización". Registro obligatorio de todas las respuestas HTTP, incluyendo las distintas a 200 OK (SC-002). El guardado del log de sincronización debe ser consistente con la operación principal — no puede perderse ante un fallo.
+**Constraints**: Timeout estricto de 2 segundos con política de reintentos antes de marcar como "Pendiente por Sincronización". Registro obligatorio de respuestas HTTP distintas a 200 OK.
 
 ## Project Structure
 
@@ -33,209 +31,112 @@ El sistema incluye un motor de mapeo que transforma los estados operativos (Entr
 
 ```text
 specs/novedad-estado-paquete/
-├── plan.md              # Este archivo
-└── spec.md              # Especificación: Novedad estado del paquete.md
+├── plan.md              # Este archivo 
+└── spec.md             # Especificación: Novedad estado del paquete.md
 ```
 
 ### Source Code (repository root)
 
 ```text
-project/
-├── backend/
-│   ├── src/main/java/com/logistica/
-│   │
-│   │   ├── application/                         # Casos de uso
-│   │   │   ├── usecases/
-│   │   │   │   ├── paquete/
-│   │   │   │   │   ├── SincronizarPaqueteUseCase.java
-│   │   │   │   │   ├── ObtenerHistorialUseCase.java
-│   │   │   │   │   └── ObtenerLogsSincronizacionUseCase.java
-│   │   │   │
-│   │   │   └── dtos/
-│   │   │       ├── request/
-│   │   │       └── response/
-│   │   │           └── PaqueteResponseDTO.java
-│   │
-│   │   ├── domain/                              # Núcleo del negocio
-│   │   │   ├── models/
-│   │   │   │   ├── Paquete.java
-│   │   │   │   ├── HistorialEstado.java
-│   │   │   │   └── LogSincronizacion.java
-│   │   │   │
-│   │   │   ├── enums/
-│   │   │   │   └── EstadoPaquete.java           # Incluye lógica de porcentaje de pago
-│   │   │   │
-│   │   │   ├── repositories/                    # Interfaces (puertos)
-│   │   │   │   ├── PaqueteRepository.java
-│   │   │   │   ├── HistorialRepository.java
-│   │   │   │   └── LogSincronizacionRepository.java
-│   │   │   │
-│   │   │   └── services/                        # Lógica pura (si aplica)
-│   │   │       └── EstadoPaqueteService.java
-│   │
-│   │   ├── infrastructure/                      # Implementaciones técnicas
-│   │   │   ├── persistence/
-│   │   │   │   ├── entities/                    # Entidades JPA
-│   │   │   │   └── repositories/                # Spring Data JPA
-│   │   │   │
-│   │   │   ├── http/
-│   │   │   │   ├── clients/                     # Feign / WebClient
-│   │   │   │   │   └── GestionClient.java
-│   │   │   │   │
-│   │   │   │   ├── dto/                         # DTOs externos (otros servicios)
-│   │   │   │   │   └── GestionPaqueteDTO.java
-│   │   │   │   │
-│   │   │   │   └── mappers/                     # Map externo → dominio
-│   │   │   │
-│   │   │   ├── resilience/                      # Configuración resiliente
-│   │   │   │   ├── RetryConfig.java
-│   │   │   │   ├── CircuitBreakerConfig.java
-│   │   │   │   └── TimeoutConfig.java
-│   │   │   │
-│   │   │   ├── web/
-│   │   │   │   ├── controllers/                 # REST API
-│   │   │   │   │   └── PaqueteController.java
-│   │   │   │   │
-│   │   │   │   └── handlers/                    # Manejo global de errores
-│   │   │   │
-│   │   │   ├── adapters/                        # Mappers dominio ↔ DTO interno
-│   │   │   │   └── PaqueteMapper.java
-│   │   │   │
-│   │   │   └── config/                          # Seguridad, CORS, etc
-│   │
-│   │   └── shared/
-│   │       ├── utils/
-│   │       └── constants/
-│
-│   ├── src/main/resources/
-│   │   ├── application.yml
-│   │   └── db/migration/
-│   │
-│   └── src/test/java/
-│       ├── integration/                         # Tests con WireMock
-│       └── unit/
-│
-│
-├── frontend/
-│   ├── src/
-│   │
-│   │   ├── app/                                # Configuración global (router, store)
-│   │
-│   │   ├── modules/                            # Estructura por features
-│   │   │   ├── paquetes/
-│   │   │   │   ├── components/                 # Tablas de historial, estados
-│   │   │   │   ├── pages/                      # Vista principal de paquetes
-│   │   │   │   ├── services/                   # Axios calls
-│   │   │   │   └── hooks/                      # Lógica reutilizable (React)
-│   │   │   │
-│   │   │   └── auditoria/
-│   │   │       ├── components/                 # Logs de sincronización
-│   │   │       ├── pages/                      # Vista auditoría financiera
-│   │   │       └── services/
-│   │
-│   │   ├── shared/                            # Reutilizable global
-│   │   │   ├── components/                    # UI genérica (tabla, modal, etc)
-│   │   │   ├── services/                      # Axios base config
-│   │   │   └── utils/
-│   │
-│   │   ├── assets/
-│   │   └── styles/
-│
-│   └── package.json
+backend/
+├── src/main/java/com/logistica/
+│   ├── clients/         # Clientes HTTP (Feign o WebClient) para API externa
+│   ├── config/          # Configuración de Resilience4j (Timeouts/Retries)
+│   ├── dtos/            # DTOs para la respuesta del Módulo de Gestión
+│   ├── models/          # Entidades JPA (Paquete, HistorialEstado, LogSincronizacion)
+│   ├── repositories/    # Interfaces Spring Data JPA
+│   └── services/        # Lógica de negocio y mapeo de porcentajes
+└── src/test/java/       # Pruebas con JUnit 5 y WireMock
+
+frontend/
+├── src/
+│   ├── components/      # UI: Tablas de historial de estados y logs de error
+│   ├── services/        # Peticiones al backend financiero
+│   └── pages/           # Vistas de auditoría financiera
+└── package.json
 ```
 
-**Structure Decision**: La carpeta `clients/` aísla la integración HTTP externa del resto del código, respetando el principio de responsabilidad única. El Enum `EstadoPaquete` centraliza todas las reglas de pago para evitar condicionales dispersos en el servicio.
+**Structure Decision**: Se introduce la carpeta clients/ en el backend, aislándola del resto del código, lo que respeta el principio de responsabilidad única para las integraciones externas.
 
 ---
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Preparar las herramientas de integración HTTP, resiliencia y simulación para pruebas.
+**Purpose**: Preparar las herramientas de integración HTTP y resiliencia.
 
-- [ ] T001 Añadir dependencias en `pom.xml` / `build.gradle`: `spring-cloud-starter-openfeign` (o WebFlux), `resilience4j-spring-boot3`, y `wiremock` (scope de test únicamente).
-- [ ] T002 Configurar la URL base del Módulo de Gestión en `application.properties` usando variable de entorno (`PACKAGE_API_URL`). Nunca hardcodear URLs en el código.
-- [ ] T003 Configurar los parámetros de Resilience4j en `application.properties`:
-    - `max-attempts: 3` (reintentos antes de marcar como "Pendiente por Sincronización")
-    - `wait-duration: 500ms` (espera entre reintentos)
-    - `timeout-duration: 2s` (timeout estricto por petición, según edge case del spec)
-    - Orden de decoración obligatorio: `@CircuitBreaker` envuelve a `@Retry`, que envuelve a `@TimeLimiter`. Este orden es crítico en Resilience4j — invertirlo produce comportamiento impredecible.
+- [ ] T001 Añadir dependencias en pom.xml/build.gradle: spring-cloud-starter-openfeign (o WebFlux), resilience4j-spring-boot3, y wiremock (para scope de test).
+- [ ] T002 Configurar las URLs base del Módulo de Gestión en application.properties usando variables de entorno (PACKAGE_API_URL).
+- [ ] T003 Configurar los parámetros de Resilience4j en application.properties (max-attempts: 3, wait-duration: 500ms, timeout-duration: 2s).
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Crear el esquema de base de datos para historial, auditoría y el motor de reglas de pago. Todo debe existir antes de implementar la lógica de consulta.
+**Purpose**: Crear el esquema de base de datos para historial y auditoría.
 
-- [ ] T004 Crear las entidades JPA con sus campos exactos según el spec:
-    - `Paquete`: `idPaquete`, `idRuta`, `estadoActual`
-    - `HistorialEstado`: `idPaquete`, `estado`, `fecha`
-    - `LogSincronizacion`: `idPaquete`, `codigoRespuestaHTTP`, `jsonRecibido`
-- [ ] T005 Implementar los `JpaRepository` para las tres entidades.
-- [ ] T006 Crear el `Enum` `EstadoPaquete` con los cuatro estados definidos en el spec y su porcentaje de pago correspondiente:
+- [ ] T004 Crear las entidades JPA Paquete, HistorialEstado y LogSincronizacion con sus respectivas anotaciones y relaciones.
+- [ ] T005 Implementar los JpaRepository para las tres entidades.
+- [ ] T006 Crear un Enum en Java que contenga las reglas de negocio de pagos (ej. ENTREGADO(1.0), DEVUELTO(0.5), DAÑADO(0.0)).
+- [ ] T007 Implementar servicio base de auditoría para guardar el LogSincronizacion de forma asíncrona (@Async) para no penalizar el tiempo de respuesta del hilo principal.
 
-  | Estado | % de Pago |
-    |:---|:---|
-  | `ENTREGADO` | 100% |
-  | `DEVUELTO` | 50% |
-  | `DAÑADO` | 0% |
-  | `EXTRAVIADO` | 0% |
-
-  Cualquier estado recibido que no esté en este Enum se considera no mapeado y activa el edge case correspondiente.
-
-**Checkpoint**: El esquema de base de datos está creado, el Enum cubre los cuatro estados del spec, y el proyecto puede compilar y conectarse a PostgreSQL.
+**Checkpoint**: Base de datos lista para registrar estados y fallos de comunicación.
 
 ---
 
-## Phase 3: User Story 1 — Consulta Sincrónica de Estado (Prioridad: P1)
+## Phase 3: User Story 1 - Consulta Sincrónica de Estado (Priority: P1)
 
-**Goal**: Implementar la consulta HTTP automática al Módulo de Gestión, el mapeo financiero del estado recibido, la actualización del paquete y el registro consistente en historial y auditoría. Esta fase cubre también los edge cases de timeout, paquete inexistente y estado no mapeado, ya que todos son requerimientos funcionales de la misma historia de usuario.
+**Goal**: Conectar con el API externa, recuperar el estado y mapearlo financieramente.
 
-**Independent Test**: Levantar un servidor WireMock local que simule el endpoint `GET /route/{idRoute}/package/{idPaquete}`. Invocar el servicio desde el backend e verificar que el estado queda guardado en `HistorialEstado` y en `estadoActual` del paquete, y que el `LogSincronizacion` registra el código HTTP 200 y el JSON recibido.
+**Independent Test**: Levantar un servidor local WireMock que simule el endpoint /route/123/package/456. Invocar el servicio de Spring Boot y verificar que se guarda en PostgreSQL el estado y el LogSincronizacion con un código HTTP 200.
 
-### Tests para User Story 1
+### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Test con WireMock simulando respuesta exitosa (HTTP 200) para validar que el JSON `{ "idPaquete": "...", "estado": "ENTREGADO" }` se deserializa correctamente en `PaqueteResponseDTO`.
-- [ ] T008 [P] [US1] Test unitario para el motor de reglas (FR-002): verificar que cada estado del Enum mapea al porcentaje correcto — `ENTREGADO` → 100%, `DEVUELTO` → 50%, `DAÑADO` → 0%, `EXTRAVIADO` → 0%.
-- [ ] T009 [P] [US1] Test para verificar el SC-001: que el `estadoActual` guardado en la entidad `Paquete` y la entrada en `HistorialEstado` coinciden exactamente con el estado recibido en la respuesta del Módulo de Gestión.
-- [ ] T010 [P] [US1] Test para verificar el FR-004: que si un paquete consulta dos veces y el estado cambia (ej. de `DEVUELTO` a `ENTREGADO`), el sistema actualiza `estadoActual` en `Paquete` y agrega una nueva entrada en `HistorialEstado`, sin sobrescribir el registro anterior.
-- [ ] T011 [P] [US1] Test con WireMock simulando HTTP 404 (paquete inexistente): verificar que el sistema registra el error en `LogSincronizacion`, detiene el cálculo de ese paquete específico y continúa con los demás paquetes de la ruta.
-- [ ] T012 [P] [US1] Test con WireMock introduciendo un delay de 3 segundos: verificar que Resilience4j aborta a los 2 segundos, reintenta hasta 3 veces y finalmente marca el paquete como "Pendiente por Sincronización", registrando el fallo en `LogSincronizacion`.
-- [ ] T013 [P] [US1] Test para el edge case de estado no mapeado: WireMock devuelve un estado desconocido (ej. `EN_INSPECCION`) y el sistema omite el cálculo de pago pero registra la consulta completa en `LogSincronizacion` (SC-002).
+- [ ] T008 [P] [US1] JUnit 5 test usando WireMock para simular una respuesta exitosa y validar la extracción del JSON.
+- [ ] T009 [P] [US1] Test unitario para validar el motor de reglas (FR-002): Asegurar que un estado "Devuelto" asigne el 50% de pago.
 
-### Implementation para User Story 1
+### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Crear el DTO `PaqueteResponseDTO` para mapear la respuesta JSON del Módulo de Gestión: `{ "idPaquete": "...", "estado": "ENTREGADO" }`.
-- [ ] T015 [P] [US1] Implementar el cliente HTTP `PackageApiClient` configurado para consumir `GET /route/{idRoute}/package/{idPaquete}`, decorado con las anotaciones de Resilience4j en el orden correcto: `@CircuitBreaker` → `@Retry` → `@TimeLimiter`.
-- [ ] T016 [P] [US1] Implementar el método fallback en `PackageApiClient` que se ejecuta cuando fallan todos los reintentos o se supera el timeout. Este método debe marcar el paquete como "Pendiente por Sincronización" y registrar el fallo en `LogSincronizacion`.
-- [ ] T017 [P] [US1] Implementar `PaqueteService.sincronizarEstado(UUID idRuta, UUID idPaquete)` con la siguiente secuencia, marcada con `@Transactional` para garantizar que la actualización del paquete y el registro en historial y auditoría ocurran de forma atómica:
-    1. Invocar `PackageApiClient` para consultar el estado del paquete.
-    2. Registrar la respuesta (código HTTP y JSON) en `LogSincronizacion` independientemente del resultado.
-    3. Si la respuesta es HTTP 200 y el estado está en el Enum: actualizar `estadoActual` en `Paquete`, agregar entrada en `HistorialEstado` con timestamp, y retornar el porcentaje de pago correspondiente.
-    4. Si la respuesta es HTTP 404: registrar "Paquete no encontrado" en `LogSincronizacion` y detener el cálculo de ese paquete sin afectar los demás.
-    5. Si el estado recibido no está en el Enum: omitir el cálculo de pago y registrar la consulta completa en `LogSincronizacion`.
-- [ ] T018 [US1] Desarrollar en React la vista de auditoría que consuma los registros de `LogSincronizacion`, mostrando los paquetes con estado "Pendiente por Sincronización" o con errores HTTP distintos a 200 para revisión del equipo financiero.
+- [ ] T010 [P] [US1] Crear el DTO PaqueteResponseDTO para mapear el JSON { "idPaquete": "...", "estado": "..." }.
+- [ ] T011 [US1] Implementar el cliente HTTP (PackageApiClient.java) configurado para consumir GET /route/{idRoute}/package/{idPaquete}.
+- [ ] T012 [US1] Implementar en PaqueteService.java la lógica que orquesta la llamada, actualiza el Paquete y guarda en HistorialEstado.
+- [ ] T013 [US1] Crear endpoint en el Módulo Financiero GET /api/finanzas/paquetes/{id}/sincronizar para disparar el proceso manualmente desde React (si es necesario).
+
+---
+
+## Phase 4: Edge Cases & Resiliencia (Priority: P2)
+
+**Goal**: Manejar caídas de red, timeouts y respuestas no mapeadas de forma elegante.
+
+**Independent Test**: Configurar WireMock para que introduzca un retraso (delay) de 3 segundos en la respuesta. Verificar que Spring Boot aborta al los 2 segundos, reintenta, y finalmente guarda el paquete como "Pendiente por Sincronización".
+
+### Tests for User Story 2
+
+- [ ] T014 [P] [US2] Test de integración con WireMock para simular errores 404 (Paquete inexistente) y errores 500. Validar la creación del LogSincronizacion respectivo.
+- [ ] T015 [P] [US2] Test para verificar la política de Timeout (FR-EdgeCase) utilizando @SpringBootTest y configuración de Resilience4j.
+
+### Implementation for User Story 2
+
+- [ ] T016 [P] [US2] Decorar el método del cliente HTTP con anotaciones de resiliencia (@Retry, @TimeLimiter, @CircuitBreaker).
+- [ ] T017 [US2] Implementar el método fallback que se ejecutará si fallan los reintentos, el cual marcará el paquete como "Pendiente por Sincronización".
+- [ ] T018 [US2] Implementar lógica para identificar estados no mapeados (ej. "EN_INSPECCION") y omitir el cálculo, pero registrar la auditoría.
+- [ ] T019 [US2] Desarrollar un componente en React que liste los paquetes con estado "Pendiente por Sincronización" o errores 404 para la revisión del equipo financiero.
 
 ---
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T019 Optimizar el cliente HTTP utilizando Connection Pooling para contribuir a que el 95% de las peticiones estén por debajo de 500ms (SC-003).
-- [ ] T020 Implementar paginación e índices en la tabla `HistorialEstado` sobre las columnas `idPaquete` y `fecha` en PostgreSQL, ya que esta tabla crecerá con cada consulta realizada.
-- [ ] T021 Añadir alertas visuales en React cuando los logs de sincronización muestren fallos recurrentes de HTTP 500, para que el equipo financiero pueda actuar antes de que afecten la liquidación.
-- [ ] T022 Añadir Swagger / OpenAPI para documentar la integración y facilitar la coordinación con el equipo del Módulo de Gestión de Paquetes.
+- [ ] T020 Optimizar el cliente HTTP utilizando Connection Pooling para asegurar que el 95% de las peticiones estén por debajo de 500ms (SC-003).
+- [ ] T021 Implementar paginación e índices en la tabla HistorialEstado (idPaquete, fecha) en PostgreSQL, ya que crecerá muy rápido.
+- [ ] T022 Añadir alertas visuales en el Frontend (React) cuando los logs de sincronización muestren fallos recurrentes de HTTP 500.
 
 ---
 
 ## Dependencies & Execution Order
 
-**WireMock desde el inicio (Phase 1)**: Es fundamental configurar WireMock en la fase de setup para no depender del equipo del Módulo de Gestión de Paquetes al momento de desarrollar y probar. Todas las pruebas de integración HTTP se hacen contra WireMock, no contra el servicio real.
+**Infraestructura de Pruebas (WireMock)**: Es fundamental implementarlo en la Fase 1/2. No debes depender del equipo de Gestión de Paquetes para empezar a programar y probar tu código.
 
-**Enum `EstadoPaquete` con los cuatro estados (Phase 2)**: Debe existir antes del servicio. Es el vocabulario financiero del módulo — si falta `EXTRAVIADO`, el sistema lo tratará como estado no mapeado incorrectamente.
+**Cliente HTTP y Entidades (Fase 3)**: Programar el "camino feliz" donde el servidor responde rápido y con estado 200 OK.
 
-**`@Transactional` en el servicio (Phase 3)**: La actualización de `Paquete`, el registro en `HistorialEstado` y el guardado en `LogSincronizacion` deben ocurrir de forma atómica. Si cualquiera falla, los tres se revierten para evitar estados inconsistentes que violarían el SC-001 y el FR-003.
+**Resiliencia (Fase 4)**: Una vez funciona la comunicación, envuelves la llamada en las lógicas de reintento y captura de timeouts.
 
-**Orden de Resilience4j obligatorio**: `@CircuitBreaker` → `@Retry` → `@TimeLimiter`. Este orden debe respetarse desde la primera implementación del cliente HTTP.
-
-**El sistema dispara la consulta, no el usuario**: La consulta sincrónica es invocada automáticamente por el proceso de liquidación. No existe ningún endpoint manual para que React dispare esta operación.
-
-**Frontend al final**: La vista de auditoría en React se construye una vez que el backend tiene validado el flujo completo, incluyendo todos los edge cases.
+**UI (React)**: Finalmente, creas las vistas para que el analista financiero pueda ver el estado de estas sincronizaciones y actuar sobre los casos pendientes.
