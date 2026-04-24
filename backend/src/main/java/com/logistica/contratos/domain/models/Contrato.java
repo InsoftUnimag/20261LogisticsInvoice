@@ -12,16 +12,16 @@ import java.util.UUID;
 @Builder
 public class Contrato {
     private UUID id;
-    private String idContrato;             // ID de negocio — texto del tercero
-    private String tipoContrato;           // texto libre — lo define el tercero
-    private Transportista transportista;   // referencia, no nombre String
-    private TipoVehiculo tipoVehiculo;     // enum compartido
-    private Boolean esPorParada;           // determina qué precio aplica
-    private BigDecimal precioParadas;      // solo si esPorParada = true
-    private BigDecimal precio;             // solo si esPorParada = false
+    private String idContrato;
+    private String tipoContrato;
+    private Transportista transportista;
+    private TipoVehiculo tipoVehiculo;
+    private Boolean esPorParada;
+    private BigDecimal precioParadas;
+    private BigDecimal precio;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFinal;
-    private Seguro seguro;                 // composición del agregado
+    private Seguro seguro;
 
     public static Contrato crear(
             String idContrato,

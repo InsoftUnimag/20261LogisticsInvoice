@@ -1,7 +1,8 @@
 package com.logistica.application.validators;
 
 import com.logistica.contratos.application.dtos.request.ContratoRequestDTO;
-import com.logistica.contratos.domain.enums.TipoContrato;
+import com.logistica.contratos.application.dtos.request.SeguroRequestDTO;
+import com.logistica.contratos.domain.enums.TipoVehiculo;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,8 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,24 +29,29 @@ class FechasContratoValidatorTest {
     }
 
     private ContratoRequestDTO dtoValido() {
-        return ContratoRequestDTO.builder()
-                .idContrato("CONT-001")
-                .tipoContrato(TipoContrato.POR_PARADA)
-                .nombreConductor("Juan Pérez")
-                .precioParadas(new BigDecimal("15.50"))
-                .tipoVehiculo("CAMION")
-                .fechaInicio(LocalDate.of(2026, 1, 1))
-                .fechaFinal(LocalDate.of(2026, 12, 31))
-                .estadoSeguro("VIGENTE")
-                .build();
+        SeguroRequestDTO seguro = new SeguroRequestDTO();
+        seguro.setNumeroPoliza("POL-001");
+        seguro.setEstado("VIGENTE");
+
+        ContratoRequestDTO dto = new ContratoRequestDTO();
+        dto.setIdContrato("CONT-001");
+        dto.setTipoContrato("MENSAJERIA");
+        dto.setTransportistaId(UUID.randomUUID());
+        dto.setEsPorParada(true);
+        dto.setPrecioParadas(new BigDecimal("15.50"));
+        dto.setTipoVehiculo(TipoVehiculo.VAN);
+        dto.setFechaInicio(LocalDateTime.of(2026, 1, 1, 0, 0));
+        dto.setFechaFinal(LocalDateTime.of(2026, 12, 31, 0, 0));
+        dto.setSeguro(seguro);
+        return dto;
     }
 
     @Test
     @DisplayName("T008 - Falla cuando fechaFinal es anterior a fechaInicio")
     void debeRechazarFechaFinalAnteriorAInicio() {
         ContratoRequestDTO dto = dtoValido();
-        dto.setFechaInicio(LocalDate.of(2026, 6, 1));
-        dto.setFechaFinal(LocalDate.of(2026, 1, 1));
+        dto.setFechaInicio(LocalDateTime.of(2026, 6, 1, 0, 0));
+        dto.setFechaFinal(LocalDateTime.of(2026, 1, 1, 0, 0));
 
         Set<ConstraintViolation<ContratoRequestDTO>> violations = validator.validate(dto);
 
@@ -58,7 +65,7 @@ class FechasContratoValidatorTest {
     @DisplayName("T008 - Falla cuando fechaFinal es igual a fechaInicio")
     void debeRechazarFechaFinalIgualAInicio() {
         ContratoRequestDTO dto = dtoValido();
-        LocalDate mismaFecha = LocalDate.of(2026, 6, 1);
+        LocalDateTime mismaFecha = LocalDateTime.of(2026, 6, 1, 0, 0);
         dto.setFechaInicio(mismaFecha);
         dto.setFechaFinal(mismaFecha);
 

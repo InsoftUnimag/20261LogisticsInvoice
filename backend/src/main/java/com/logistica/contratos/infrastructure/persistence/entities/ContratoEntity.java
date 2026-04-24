@@ -1,27 +1,11 @@
 package com.logistica.contratos.infrastructure.persistence.entities;
 
-import com.logistica.contratos.domain.enums.TipoContrato;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "contratos")
@@ -33,18 +17,17 @@ import java.time.LocalDateTime;
 public class ContratoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "id_contrato", nullable = false, unique = true)
     private String idContrato;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_contrato", nullable = false)
-    private TipoContrato tipoContrato;
+    private String tipoContrato;
 
-    @Column(name = "nombre_conductor", nullable = false)
-    private String nombreConductor;
+    @Column(name = "es_por_parada", nullable = false)
+    private Boolean esPorParada;
 
     @Column(name = "precio_paradas")
     private BigDecimal precioParadas;
@@ -56,18 +39,18 @@ public class ContratoEntity {
     private String tipoVehiculo;
 
     @Column(name = "fecha_inicio", nullable = false)
-    private LocalDate fechaInicio;
+    private LocalDateTime fechaInicio;
 
     @Column(name = "fecha_final", nullable = false)
-    private LocalDate fechaFinal;
+    private LocalDateTime fechaFinal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private UsuarioEntity usuario;
+    @JoinColumn(name = "id_transportista", nullable = false)
+    private TransportistaEntity transportista;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_vehiculo", nullable = false)
-    private VehiculoEntity vehiculo;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_seguro")
+    private SeguroEntity seguro;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

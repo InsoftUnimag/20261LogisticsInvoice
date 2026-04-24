@@ -1,42 +1,39 @@
 package com.logistica.contratos.infrastructure.persistence.repositories;
 
+import com.logistica.contratos.domain.enums.TipoVehiculo;
 import com.logistica.contratos.domain.models.Vehiculo;
 import com.logistica.contratos.domain.repositories.VehiculoRepository;
-import com.logistica.contratos.infrastructure.persistence.entities.UsuarioEntity;
 import com.logistica.contratos.infrastructure.persistence.entities.VehiculoEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
 public class VehiculoRepositoryImpl implements VehiculoRepository {
 
     private final VehiculoJpaRepository jpaRepository;
-    private final UsuarioJpaRepository usuarioJpaRepository;
 
     @Override
     public Vehiculo guardar(Vehiculo vehiculo) {
-        UsuarioEntity usuario = usuarioJpaRepository.getReferenceById(vehiculo.getIdUsuario());
         VehiculoEntity entity = VehiculoEntity.builder()
-                .usuario(usuario)
-                .tipo(vehiculo.getTipo())
+                .tipo(vehiculo.getTipo().name())
                 .build();
         VehiculoEntity saved = jpaRepository.save(entity);
         return Vehiculo.builder()
                 .idVehiculo(saved.getIdVehiculo())
-                .idUsuario(saved.getUsuario().getIdUsuario())
-                .tipo(saved.getTipo())
+                .tipo(TipoVehiculo.valueOf(saved.getTipo()))
                 .build();
     }
 
     @Override
-    public Optional<Vehiculo> buscarPorId(Long id) {
+    public Optional<Vehiculo> buscarPorId(UUID id) {
         return jpaRepository.findById(id)
                 .map(e -> Vehiculo.builder()
                         .idVehiculo(e.getIdVehiculo())
-                        .tipo(e.getTipo())
+                        .tipo(TipoVehiculo.valueOf(e.getTipo()))
                         .build());
     }
 }

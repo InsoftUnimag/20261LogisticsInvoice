@@ -1,7 +1,8 @@
 package com.logistica.domain.validators;
 
 import com.logistica.contratos.application.dtos.request.ContratoRequestDTO;
-import com.logistica.contratos.domain.enums.TipoContrato;
+import com.logistica.contratos.application.dtos.request.SeguroRequestDTO;
+import com.logistica.contratos.domain.enums.TipoVehiculo;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,8 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,21 +29,26 @@ class PrecioCondicionalValidatorTest {
     }
 
     private ContratoRequestDTO dtoBase() {
-        return ContratoRequestDTO.builder()
-                .idContrato("CONT-001")
-                .nombreConductor("Ana García")
-                .tipoVehiculo("FURGONETA")
-                .fechaInicio(LocalDate.of(2026, 1, 1))
-                .fechaFinal(LocalDate.of(2026, 12, 31))
-                .estadoSeguro("VIGENTE")
-                .build();
+        SeguroRequestDTO seguro = new SeguroRequestDTO();
+        seguro.setNumeroPoliza("POL-001");
+        seguro.setEstado("VIGENTE");
+
+        ContratoRequestDTO dto = new ContratoRequestDTO();
+        dto.setIdContrato("CONT-001");
+        dto.setTipoContrato("MENSAJERIA");
+        dto.setTransportistaId(UUID.randomUUID());
+        dto.setTipoVehiculo(TipoVehiculo.VAN);
+        dto.setFechaInicio(LocalDateTime.of(2026, 1, 1, 0, 0));
+        dto.setFechaFinal(LocalDateTime.of(2026, 12, 31, 0, 0));
+        dto.setSeguro(seguro);
+        return dto;
     }
 
     @Test
-    @DisplayName("T009 - POR_PARADA requiere precioParadas")
+    @DisplayName("T009 - esPorParada=true requiere precioParadas")
     void porParadaRequierePrecioParadas() {
         ContratoRequestDTO dto = dtoBase();
-        dto.setTipoContrato(TipoContrato.POR_PARADA);
+        dto.setEsPorParada(true);
         dto.setPrecioParadas(null);
 
         Set<ConstraintViolation<ContratoRequestDTO>> violations = validator.validate(dto);
@@ -53,10 +60,10 @@ class PrecioCondicionalValidatorTest {
     }
 
     @Test
-    @DisplayName("T009 - POR_PARADA es válido cuando precioParadas está presente")
+    @DisplayName("T009 - esPorParada=true es válido cuando precioParadas está presente")
     void porParadaValidoCuandoPrecioParadasPresente() {
         ContratoRequestDTO dto = dtoBase();
-        dto.setTipoContrato(TipoContrato.POR_PARADA);
+        dto.setEsPorParada(true);
         dto.setPrecioParadas(new BigDecimal("20.00"));
 
         Set<ConstraintViolation<ContratoRequestDTO>> violations = validator.validate(dto);
@@ -67,10 +74,10 @@ class PrecioCondicionalValidatorTest {
     }
 
     @Test
-    @DisplayName("T009 - RECORRIDO_COMPLETO requiere precio")
+    @DisplayName("T009 - esPorParada=false requiere precio")
     void recorridoCompletoRequierePrecio() {
         ContratoRequestDTO dto = dtoBase();
-        dto.setTipoContrato(TipoContrato.RECORRIDO_COMPLETO);
+        dto.setEsPorParada(false);
         dto.setPrecio(null);
 
         Set<ConstraintViolation<ContratoRequestDTO>> violations = validator.validate(dto);
@@ -82,10 +89,10 @@ class PrecioCondicionalValidatorTest {
     }
 
     @Test
-    @DisplayName("T009 - RECORRIDO_COMPLETO es válido cuando precio está presente")
+    @DisplayName("T009 - esPorParada=false es válido cuando precio está presente")
     void recorridoCompletoValidoCuandoPrecioPresente() {
         ContratoRequestDTO dto = dtoBase();
-        dto.setTipoContrato(TipoContrato.RECORRIDO_COMPLETO);
+        dto.setEsPorParada(false);
         dto.setPrecio(new BigDecimal("500.00"));
 
         Set<ConstraintViolation<ContratoRequestDTO>> violations = validator.validate(dto);
@@ -96,10 +103,10 @@ class PrecioCondicionalValidatorTest {
     }
 
     @Test
-    @DisplayName("T009 - POR_PARADA ignora el campo precio")
+    @DisplayName("T009 - esPorParada=true ignora el campo precio")
     void porParadaIgnoraCampoPrecio() {
         ContratoRequestDTO dto = dtoBase();
-        dto.setTipoContrato(TipoContrato.POR_PARADA);
+        dto.setEsPorParada(true);
         dto.setPrecioParadas(new BigDecimal("10.00"));
         dto.setPrecio(null);
 

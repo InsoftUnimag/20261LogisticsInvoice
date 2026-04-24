@@ -1,8 +1,10 @@
 package com.logistica.contratos.infrastructure.web.handlers;
 
 import com.logistica.contratos.domain.exceptions.ContratoInvalidoException;
+import com.logistica.contratos.domain.exceptions.ContratoNotFoundException;
 import com.logistica.contratos.domain.exceptions.ContratoYaExisteException;
 import com.logistica.contratos.domain.exceptions.RecursoNoEncontradoException;
+import com.logistica.contratos.domain.exceptions.TransportistaNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +45,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.builder()
                         .mensaje("El contrato con este identificador ya existe")
+                        .build());
+    }
+
+    @ExceptionHandler(ContratoNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleContratoNotFound(ContratoNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.builder()
+                        .mensaje(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(TransportistaNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTransportistaNotFound(TransportistaNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.builder()
+                        .mensaje(ex.getMessage())
                         .build());
     }
 

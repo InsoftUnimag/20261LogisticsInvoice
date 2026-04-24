@@ -1,19 +1,18 @@
 package com.logistica.application.usecases.contrato;
 
 import com.logistica.contratos.application.dtos.request.ContratoRequestDTO;
+import com.logistica.contratos.application.dtos.request.SeguroRequestDTO;
 import com.logistica.contratos.application.dtos.response.ContratoResponseDTO;
+import com.logistica.contratos.application.mappers.ContratoResponseMapper;
 import com.logistica.contratos.application.usecases.contrato.CrearContratoUseCase;
-import com.logistica.contratos.domain.enums.TipoContrato;
+import com.logistica.contratos.domain.enums.TipoVehiculo;
 import com.logistica.contratos.domain.exceptions.ContratoYaExisteException;
+import com.logistica.contratos.domain.exceptions.TransportistaNotFoundException;
 import com.logistica.contratos.domain.models.Contrato;
 import com.logistica.contratos.domain.models.Seguro;
-import com.logistica.domain.models.Usuario;
-import com.logistica.contratos.domain.models.Vehiculo;
+import com.logistica.contratos.domain.models.Transportista;
 import com.logistica.contratos.domain.repositories.ContratoRepository;
-import com.logistica.contratos.domain.repositories.SeguroRepository;
-import com.logistica.contratos.domain.repositories.UsuarioRepository;
-import com.logistica.contratos.domain.repositories.VehiculoRepository;
-import com.logistica.contratos.infrastructure.adapters.ContratoMapper;
+import com.logistica.contratos.domain.repositories.TransportistaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,13 +22,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,49 +39,69 @@ class CrearContratoUseCaseTest {
     @Mock
     private ContratoRepository contratoRepository;
     @Mock
-    private UsuarioRepository usuarioRepository;
+    private TransportistaRepository transportistaRepository;
     @Mock
-    private VehiculoRepository vehiculoRepository;
-    @Mock
-    private SeguroRepository seguroRepository;
-    @Mock
-    private ContratoMapper contratoMapper;
+    private ContratoResponseMapper responseMapper;
 
     @InjectMocks
     private CrearContratoUseCase useCase;
 
     private ContratoRequestDTO dtoValido;
+    private UUID transportistaId;
 
     @BeforeEach
     void setUp() {
-        dtoValido = ContratoRequestDTO.builder()
-                .idContrato("CONT-001")
-                .tipoContrato(TipoContrato.POR_PARADA)
-                .nombreConductor("Juan Pérez")
-                .precioParadas(new BigDecimal("15.50"))
-                .tipoVehiculo("CAMION")
-                .fechaInicio(LocalDate.of(2026, 1, 1))
-                .fechaFinal(LocalDate.of(2026, 12, 31))
-                .estadoSeguro("VIGENTE")
-                .build();
+        transportistaId = UUID.randomUUID();
+
+        SeguroRequestDTO seguro = new SeguroRequestDTO();
+        seguro.setNumeroPoliza("POL-001");
+        seguro.setEstado("VIGENTE");
+
+        dtoValido = new ContratoRequestDTO();
+        dtoValido.setIdContrato("CONT-001");
+        dtoValido.setTipoContrato("MENSAJERIA");
+        dtoValido.setTransportistaId(transportistaId);
+        dtoValido.setEsPorParada(true);
+        dtoValido.setPrecioParadas(new BigDecimal("15.50"));
+        dtoValido.setTipoVehiculo(TipoVehiculo.VAN);
+        dtoValido.setFechaInicio(LocalDateTime.of(2026, 1, 1, 0, 0));
+        dtoValido.setFechaFinal(LocalDateTime.of(2026, 12, 31, 0, 0));
+        dtoValido.setSeguro(seguro);
     }
 
     @Test
     @DisplayName("Registra el contrato cuando los datos son válidos")
     void debeRegistrarContratoConDatosValidos() {
-        Usuario usuarioGuardado = Usuario.builder().idUsuario(1L).nombre("Juan Pérez").build();
-        Vehiculo vehiculoGuardado = Vehiculo.builder().idVehiculo(1L).idUsuario(1L).tipo("CAMION").build();
-        Seguro seguroGuardado = Seguro.builder().idSeguro(1L).idUsuario(1L).estado("VIGENTE").build();
-        Contrato contratoCreado = Contrato.builder().id(1L).idContrato("CONT-001").build();
-        ContratoResponseDTO responseEsperado = ContratoResponseDTO.builder().id(1L).idContrato("CONT-001").build();
+        Transportista transportista = Transportista.builder()
+                .transportistaId(transportistaId)
+                .nombre("Juan Pérez")
+                .build();
+
+        Contrato contratoCreado = Contrato.builder()
+                .id(UUID.randomUUID())
+                .idContrato("CONT-001")
+                .transportista(transportista)
+                .tipoVehiculo(TipoVehiculo.VAN)
+                .esPorParada(true)
+                .precioParadas(new BigDecimal("15.50"))
+                .fechaInicio(LocalDateTime.of(2026, 1, 1, 0, 0))
+                .fechaFinal(LocalDateTime.of(2026, 12, 31, 0, 0))
+                .seguro(Seguro.builder()
+                        .idSeguro(UUID.randomUUID())
+                        .numeroPoliza("POL-001")
+                        .estado("VIGENTE")
+                        .build())
+                .build();
+
+        ContratoResponseDTO responseEsperado = ContratoResponseDTO.builder()
+                .id(contratoCreado.getId())
+                .idContrato("CONT-001")
+                .build();
 
         when(contratoRepository.existePorIdContrato("CONT-001")).thenReturn(false);
-        when(usuarioRepository.guardar(any())).thenReturn(usuarioGuardado);
-        when(vehiculoRepository.guardar(any())).thenReturn(vehiculoGuardado);
-        when(seguroRepository.guardar(any())).thenReturn(seguroGuardado);
-        when(contratoMapper.toDomain(any(), anyLong(), anyLong())).thenReturn(contratoCreado);
+        when(transportistaRepository.buscarPorId(transportistaId)).thenReturn(Optional.of(transportista));
         when(contratoRepository.guardar(any())).thenReturn(contratoCreado);
-        when(contratoMapper.toResponseDTO(any())).thenReturn(responseEsperado);
+        when(responseMapper.toResponseDTO(any())).thenReturn(responseEsperado);
 
         ContratoResponseDTO resultado = useCase.ejecutar(dtoValido);
 
@@ -97,32 +116,21 @@ class CrearContratoUseCaseTest {
         when(contratoRepository.existePorIdContrato("CONT-001")).thenReturn(true);
 
         assertThatThrownBy(() -> useCase.ejecutar(dtoValido))
-                .isInstanceOf(ContratoYaExisteException.class)
-                .hasMessageContaining("CONT-001");
+                .isInstanceOf(ContratoYaExisteException.class);
 
         verify(contratoRepository, never()).guardar(any());
-        verify(usuarioRepository, never()).guardar(any());
+        verify(transportistaRepository, never()).buscarPorId(any());
     }
 
     @Test
-    @DisplayName("Crea usuario, vehículo y seguro de manera atómica")
-    void debeCriarTodasLasEntidadesAsociadas() {
-        Usuario usuarioGuardado = Usuario.builder().idUsuario(2L).nombre("Juan Pérez").build();
-        Vehiculo vehiculoGuardado = Vehiculo.builder().idVehiculo(2L).idUsuario(2L).tipo("CAMION").build();
-        Contrato contratoCreado = Contrato.builder().id(1L).idContrato("CONT-001").build();
+    @DisplayName("Lanza excepción cuando el transportista no existe")
+    void debeLanzarExcepcionCuandoTransportistaNoeExiste() {
+        when(contratoRepository.existePorIdContrato("CONT-001")).thenReturn(false);
+        when(transportistaRepository.buscarPorId(transportistaId)).thenReturn(Optional.empty());
 
-        when(contratoRepository.existePorIdContrato(anyString())).thenReturn(false);
-        when(usuarioRepository.guardar(any())).thenReturn(usuarioGuardado);
-        when(vehiculoRepository.guardar(any())).thenReturn(vehiculoGuardado);
-        when(seguroRepository.guardar(any())).thenReturn(Seguro.builder().idSeguro(1L).build());
-        when(contratoMapper.toDomain(any(), anyLong(), anyLong())).thenReturn(contratoCreado);
-        when(contratoRepository.guardar(any())).thenReturn(contratoCreado);
-        when(contratoMapper.toResponseDTO(any())).thenReturn(ContratoResponseDTO.builder().build());
+        assertThatThrownBy(() -> useCase.ejecutar(dtoValido))
+                .isInstanceOf(TransportistaNotFoundException.class);
 
-        useCase.ejecutar(dtoValido);
-
-        verify(usuarioRepository).guardar(any());
-        verify(vehiculoRepository).guardar(any());
-        verify(seguroRepository).guardar(any());
+        verify(contratoRepository, never()).guardar(any());
     }
 }

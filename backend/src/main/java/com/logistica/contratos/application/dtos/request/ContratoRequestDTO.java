@@ -1,50 +1,50 @@
 package com.logistica.contratos.application.dtos.request;
 
-import com.logistica.contratos.domain.enums.TipoContrato;
-import com.logistica.contratos.domain.validators.ValidFechasContrato;
-import com.logistica.contratos.domain.validators.ValidPrecioCondicional;
+import com.logistica.contratos.application.validators.ValidFechasContrato;
+import com.logistica.contratos.application.validators.ValidPrecioCondicional;
+import com.logistica.contratos.domain.enums.TipoVehiculo;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-@ValidFechasContrato
-@ValidPrecioCondicional
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@ValidFechasContrato
+@ValidPrecioCondicional
 public class ContratoRequestDTO {
 
     @NotBlank(message = "El identificador del contrato es obligatorio")
     private String idContrato;
 
     @NotNull(message = "El tipo de contrato es obligatorio")
-    private TipoContrato tipoContrato;
+    private String tipoContrato;
 
-    @NotBlank(message = "El nombre del conductor es obligatorio")
-    private String nombreConductor;
+    @NotNull(message = "El Id del transportador es obligatorio")
+    private UUID transportistaId;
+
+    @NotNull(message = "esPorParada es obligatorio")
+    private Boolean esPorParada;
 
     private BigDecimal precioParadas;
 
     private BigDecimal precio;
 
-    @NotBlank(message = "El tipo de vehículo es obligatorio")
-    private String tipoVehiculo;
+    @NotNull(message = "El tipo de vehículo es obligatorio")
+    private TipoVehiculo tipoVehiculo;
 
     @NotNull(message = "La fecha de inicio es obligatoria")
-    private LocalDate fechaInicio;
+    private LocalDateTime fechaInicio;
 
     @NotNull(message = "La fecha final es obligatoria")
-    private LocalDate fechaFinal;
+    private LocalDateTime fechaFinal;
 
-    @NotBlank(message = "El estado del seguro es obligatorio")
-    private String estadoSeguro;
+    @Valid
+    @NotNull(message = "El seguro es obligatorio")
+    private SeguroRequestDTO seguro;
 }

@@ -1,31 +1,25 @@
 package com.logistica.contratos.application.dtos.response;
 
-import com.logistica.contratos.domain.enums.TipoContrato;
-import lombok.AllArgsConstructor;
+
+import com.logistica.contratos.domain.enums.TipoVehiculo;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
-@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class ContratoResponseDTO {
-    private Long id;
+    private UUID id;
     private String idContrato;
-    private TipoContrato tipoContrato;
-    private String nombreConductor;
+    private String tipoContrato;
+    private TransportistaResponseDTO transportista;
+    private TipoVehiculo tipoVehiculo;
+    private Boolean esPorParada;
     private BigDecimal precioParadas;
     private BigDecimal precio;
-    private String tipoVehiculo;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFinal;
-    private String estadoSeguro;
-    private LocalDateTime createdAt;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFinal;
+    private SeguroResponseDTO seguro;
 }

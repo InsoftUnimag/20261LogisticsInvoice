@@ -1,15 +1,15 @@
 package com.logistica.contratos.domain.models;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Builder
 public class Seguro {
-    private Long idSeguro;
-    private Long idUsuario;
+    private UUID idSeguro;
+    private String numeroPoliza;
     private String estado;
 }

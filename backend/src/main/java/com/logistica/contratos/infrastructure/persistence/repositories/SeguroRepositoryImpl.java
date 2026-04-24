@@ -3,7 +3,6 @@ package com.logistica.contratos.infrastructure.persistence.repositories;
 import com.logistica.contratos.domain.models.Seguro;
 import com.logistica.contratos.domain.repositories.SeguroRepository;
 import com.logistica.contratos.infrastructure.persistence.entities.SeguroEntity;
-import com.logistica.contratos.infrastructure.persistence.entities.UsuarioEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,19 +11,18 @@ import org.springframework.stereotype.Repository;
 public class SeguroRepositoryImpl implements SeguroRepository {
 
     private final SeguroJpaRepository jpaRepository;
-    private final UsuarioJpaRepository usuarioJpaRepository;
 
     @Override
     public Seguro guardar(Seguro seguro) {
-        UsuarioEntity usuario = usuarioJpaRepository.getReferenceById(seguro.getIdUsuario());
         SeguroEntity entity = SeguroEntity.builder()
-                .usuario(usuario)
+                .idSeguro(seguro.getIdSeguro())
+                .numeroPoliza(seguro.getNumeroPoliza())
                 .estado(seguro.getEstado())
                 .build();
         SeguroEntity saved = jpaRepository.save(entity);
         return Seguro.builder()
                 .idSeguro(saved.getIdSeguro())
-                .idUsuario(saved.getUsuario().getIdUsuario())
+                .numeroPoliza(saved.getNumeroPoliza())
                 .estado(saved.getEstado())
                 .build();
     }
