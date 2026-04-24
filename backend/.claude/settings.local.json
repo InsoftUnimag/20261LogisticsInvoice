@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradlew.bat test *)",
+      "Bash(cmd.exe *)",
+      "Bash(echo \"exit1: $?\")",
+      "Bash(echo \"exit2: $?\")",
+      "Bash(echo \"exit3: $?\")"
+    ]
+  }
+}
