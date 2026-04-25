@@ -4,10 +4,13 @@ import com.logistica.application.usecases.pago.ConsultarEstadoPagoUseCase;
 import com.logistica.application.dtos.response.EstadoPagoResponseDTO;
 import com.logistica.domain.enums.EstadoPagoEnum;
 import com.logistica.domain.exceptions.PagoNoEncontradoException;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -20,15 +23,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PagoController.class)
+@AutoConfigureMockMvc(addFilters = false) // Desactiva seguridad para evitar el 401
 public class PagoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+
     @MockBean
     private ConsultarEstadoPagoUseCase consultarEstadoPagoUseCase;
 
     @Test
+    @WithMockUser // Añade un usuario mock por si acaso
     void obtenerEstadoPago_CuandoPagoExiste_DebeRetornar200OK() throws Exception {
         // Arrange
         UUID pagoId = UUID.randomUUID();
@@ -50,6 +56,7 @@ public class PagoControllerTest {
     }
 
     @Test
+    @WithMockUser // Añade un usuario mock por si acaso
     void obtenerEstadoPago_CuandoPagoNoExiste_DebeRetornar404NotFound() throws Exception {
         // Arrange
         UUID pagoId = UUID.randomUUID();
