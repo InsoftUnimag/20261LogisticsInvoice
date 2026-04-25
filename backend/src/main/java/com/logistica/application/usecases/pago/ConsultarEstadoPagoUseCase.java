@@ -1,27 +1,26 @@
 package com.logistica.application.usecases.pago;
 
 import com.logistica.application.dtos.response.EstadoPagoResponseDTO;
+import com.logistica.application.mappers.PagoDtoMapper;
 import com.logistica.domain.exceptions.PagoNoEncontradoException;
 import com.logistica.domain.models.Pago;
 import com.logistica.domain.repositories.PagoRepository;
-import com.logistica.infrastructure.adapters.PagoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
 public class ConsultarEstadoPagoUseCase {
 
-    @Autowired
-    private PagoRepository pagoRepository;
+    private final PagoRepository pagoRepository;
+    private final PagoDtoMapper pagoDtoMapper;
 
-    @Autowired
-    private PagoMapper pagoMapper;
+    public ConsultarEstadoPagoUseCase(PagoRepository pagoRepository) {
+        this.pagoRepository = pagoRepository;
+        this.pagoDtoMapper = new PagoDtoMapper();
+    }
 
     public EstadoPagoResponseDTO ejecutar(UUID pagoId) {
         Pago pago = pagoRepository.findById(pagoId)
                 .orElseThrow(() -> new PagoNoEncontradoException("Pago no encontrado"));
-        return pagoMapper.toEstadoPagoResponseDTO(pago);
+        return pagoDtoMapper.toEstadoPagoResponseDTO(pago);
     }
 }

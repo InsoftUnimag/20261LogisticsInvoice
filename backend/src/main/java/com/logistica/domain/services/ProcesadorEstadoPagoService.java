@@ -2,16 +2,16 @@ package com.logistica.domain.services;
 
 import com.logistica.domain.models.Pago;
 import com.logistica.domain.repositories.PagoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Service
 public class ProcesadorEstadoPagoService {
 
-    @Autowired
-    private PagoRepository pagoRepository;
+    private final PagoRepository pagoRepository;
+
+    public ProcesadorEstadoPagoService(PagoRepository pagoRepository) {
+        this.pagoRepository = pagoRepository;
+    }
 
     public void procesarEstado(UUID pagoId, String estado) {
         Pago pago = pagoRepository.findById(pagoId).orElse(null);

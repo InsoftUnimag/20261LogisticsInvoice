@@ -1,10 +1,7 @@
 package com.logistica.domain.services;
 
-import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
-@Service
 public class AuditoriaPagoService {
 
     public void registrarIntentoAccesoNoAutorizado(UUID pagoId, UUID usuarioId) {
