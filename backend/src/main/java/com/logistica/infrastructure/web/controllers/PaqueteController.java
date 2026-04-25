@@ -9,8 +9,13 @@ import com.logistica.application.usecases.paquete.SincronizarPaqueteUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/api")
@@ -35,19 +40,28 @@ public class PaqueteController {
 
     /** Returns state history for a package ordered by fecha DESC. */
     @GetMapping("/paquetes/{idPaquete}/historial")
-    public ResponseEntity<List<HistorialEstadoDTO>> historial(@PathVariable Long idPaquete) {
-        return ResponseEntity.ok(historialUseCase.execute(idPaquete));
+    public ResponseEntity<List<HistorialEstadoDTO>> obtenerHistorial(
+            @PathVariable Long idPaquete,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        return ResponseEntity.ok(historialUseCase.execute(idPaquete, page, size));
     }
 
-    /** Returns all sync audit logs (for financial team review). */
     @GetMapping("/sincronizacion/logs")
-    public ResponseEntity<List<LogSincronizacionDTO>> logs() {
-        return ResponseEntity.ok(logsUseCase.findAll());
+    public ResponseEntity<List<LogSincronizacionDTO>> obtenerLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        return ResponseEntity.ok(logsUseCase.findAll(page, size));
     }
 
-    /** Returns sync logs filtered by package. */
-    @GetMapping("/sincronizacion/logs/{idPaquete}")
-    public ResponseEntity<List<LogSincronizacionDTO>> logsPorPaquete(@PathVariable Long idPaquete) {
-        return ResponseEntity.ok(logsUseCase.findByIdPaquete(idPaquete));
+    @GetMapping("/sincronizacion/logs/paquetes/{idPaquete}")
+    public ResponseEntity<List<LogSincronizacionDTO>> obtenerLogsPorPaquete(
+            @PathVariable Long idPaquete,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size
+    ) {
+        return ResponseEntity.ok(logsUseCase.findByIdPaquete(idPaquete, page, size));
     }
 }

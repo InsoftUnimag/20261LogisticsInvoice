@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface HistorialRepository {
 
-    HistorialEstado save(HistorialEstado historial);
+    HistorialEstado save(HistorialEstado historialEstado);
 
-    List<HistorialEstado> findByIdPaqueteOrderByFechaDesc(Long idPaquete);
+    List<HistorialEstado> findByIdPaquete(Long idPaquete, int page, int size);
 }

@@ -1,5 +1,6 @@
 package com.logistica.domain.enums;
 
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -21,15 +22,22 @@ public enum EstadoPaquete {
     }
 
     /**
-     * Maps raw API string to enum. Handles "DAÑADO" → DANADO alias.
+     * Maps raw API state strings to internal rules. The normalization tolerates
+     * accents, spaces and hyphens: "DAÑADO", "danado" and "Dañado" map to DANADO.
      */
     public static Optional<EstadoPaquete> fromString(String estado) {
-        if (estado == null) return Optional.empty();
-        String upper = estado.trim().toUpperCase();
-        // Alias for special character variant received from external API
-        if ("DAÑADO".equals(upper)) return Optional.of(DANADO);
+        if (estado == null || estado.isBlank()) {
+            return Optional.empty();
+        }
+
+        String normalized = Normalizer.normalize(estado.trim(), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replace('-', '_')
+                .replace(' ', '_')
+                .toUpperCase();
+
         return Arrays.stream(values())
-                .filter(e -> e.name().equals(upper))
+                .filter(e -> e.name().equals(normalized))
                 .findFirst();
     }
 }

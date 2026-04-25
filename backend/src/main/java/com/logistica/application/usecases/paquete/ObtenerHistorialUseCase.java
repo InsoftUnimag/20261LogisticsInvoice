@@ -1,22 +1,32 @@
 package com.logistica.application.usecases.paquete;
 
 import com.logistica.application.dtos.response.HistorialEstadoDTO;
+import com.logistica.domain.models.HistorialEstado;
 import com.logistica.domain.repositories.HistorialRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class ObtenerHistorialUseCase {
 
     private final HistorialRepository historialRepository;
 
-    public List<HistorialEstadoDTO> execute(Long idPaquete) {
-        return historialRepository.findByIdPaqueteOrderByFechaDesc(idPaquete)
+    public List<HistorialEstadoDTO> execute(Long idPaquete, int page, int size) {
+        return historialRepository.findByIdPaquete(idPaquete, page, size)
                 .stream()
-                .map(h -> new HistorialEstadoDTO(h.getId(), h.getIdPaquete(), h.getEstado(), h.getFecha()))
+                .map(this::toDto)
                 .toList();
+    }
+
+    private HistorialEstadoDTO toDto(HistorialEstado historial) {
+        return new HistorialEstadoDTO(
+                historial.getId(),
+                historial.getIdPaquete(),
+                historial.getEstado(),
+                historial.getFecha()
+        );
     }
 }

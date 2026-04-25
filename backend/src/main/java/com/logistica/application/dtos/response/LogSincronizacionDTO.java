@@ -1,11 +1,18 @@
 package com.logistica.application.dtos.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
-public record LogSincronizacionDTO(
-        Long          id,
-        Long          idPaquete,
-        Integer       codigoRespuestaHTTP,
-        String        jsonRecibido,
-        LocalDateTime createdAt
-) {}
+@Getter
+@AllArgsConstructor
+public class LogSincronizacionDTO {
+
+    private Long id;
+    private Long idPaquete;
+    private Integer codigoRespuestaHTTP;
+    private String jsonRecibido;
+    private LocalDateTime fechaSincronizacion;
+
+}

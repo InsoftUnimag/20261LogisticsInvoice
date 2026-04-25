@@ -9,6 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -22,8 +23,10 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2023.0.1")
-    set('resilience4jVersion', "2.2.0")
+    springCloudVersion = '2023.0.1'
+    resilience4jVersion = '2.2.0'
+    lombokVersion = '1.18.36'
+    flywayVersion = '10.20.1'
 }
 
 dependencies {
@@ -33,32 +36,31 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
-    // HTTP client – OpenFeign
+    // HTTP client - OpenFeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    // Resilience4j (CircuitBreaker, Retry, TimeLimiter)
+    // Resilience4j
     implementation "io.github.resilience4j:resilience4j-spring-boot3:${resilience4jVersion}"
 
     // Database migrations
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+    runtimeOnly "org.flywaydb:flyway-database-postgresql:${flywayVersion}"
+
+    // PostgreSQL driver
+    runtimeOnly 'org.postgresql:postgresql'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    // PostgreSQL driver (runtime)
-    runtimeOnly 'org.postgresql:postgresql'
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.wiremock:wiremock-standalone:3.5.4'
     testRuntimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // Lombok in test scope
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 dependencyManagement {
