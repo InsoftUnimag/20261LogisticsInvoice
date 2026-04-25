@@ -58,24 +58,34 @@ project/
 │   │   │       └── response/
 │   │   │           ├── LiquidacionListItemDTO.java
 │   │   │           ├── LiquidacionDetalleDTO.java
-│   │   │           └── PaginacionResponseDTO.java
+│   │   │           └── AjusteLiquidacionDTO.java
+│   │   │           └── LiquidacionListResponseDTO.java
 │   │
 │   │   ├── domain/                                  # Núcleo del negocio
 │   │   │   ├── models/
-│   │   │   │   └── Liquidacion.java                 # Modelo existente
-│   │   │   │
+│   │   │   │   ├── Liquidacion.java                 # Modelo existente
+│   │   │   │   ├── Ajuste.java
+│   │   │   │   ├── ResultadoBusquedaPorRuta.java
+│   │   │   │   └── Ruta.java
 │   │   │   ├── repositories/                        # Puertos
 │   │   │   │   └── LiquidacionRepository.java
-│   │   │   │
+│   │   │   ├── enums/  
+│   │   │   │   └── EstadoLiquidacion.java
 │   │   │   └── exceptions/
 │   │   │       ├── LiquidacionNoEncontradaException.java
+│   │   │       ├── LiquidacionAunNoCalculadaException.java
 │   │   │       └── AccesoDenegadoException.java
 │   │
 │   │   ├── infrastructure/                          # Implementación técnica
 │   │   │   ├── persistence/
 │   │   │   │   ├── entities/                        # JPA (reutilizadas)
+│   │   │   │       └── AjusteEntity.java
+│   │   │   │       └── LiquidacionEntity.java
+│   │   │   │       └── RutaEntity.java
 │   │   │   │   └── repositories/                    # Spring Data + queries
 │   │   │   │       └── LiquidacionJpaRepository.java
+│   │   │   │       └── LiquidacionRepositoryImpl.java
+│   │   │   │       └── RutaJpaRepository.java
 │   │   │   │
 │   │   │   ├── web/
 │   │   │   │   ├── controllers/
@@ -83,7 +93,9 @@ project/
 │   │   │   │   │
 │   │   │   │   └── handlers/
 │   │   │   │       └── GlobalExceptionHandler.java
-│   │   │   │
+│   │   │   ├── security/  
+│   │   │   │   └── JwtAuthenticationFilter.java
+│   │   │   │   └── JwtService.java   
 │   │   │   ├── adapters/                            # Mappers
 │   │   │   │   └── LiquidacionMapper.java
 │   │   │   │
@@ -99,10 +111,13 @@ project/
 │   ├── src/main/resources/
 │   │   ├── db/migration/
 │   │   │   └── Vx__indexes_visualizacion_liquidacion.sql
+│   │   │   └── Vx__init_schema.sql
 │   │   │
-│   │   └── application.yml
+│   │   └── application.properties
+│   │   └── application-dev.properties
+│   │   └── application-prod.properties
 │   │
-│   └── pom.xml / build.gradle
+│   └── pom.xml / build.gradle / settings.gradle
 │
 │
 ├── frontend/
