@@ -25,9 +25,11 @@ public class LiquidacionController {
     private final ObtenerDetalleLiquidacionUseCase obtenerDetalleUseCase;
     private final BuscarLiquidacionesUseCase buscarUseCase;
 
-    public LiquidacionController(ListarLiquidacionesUseCase listarUseCase,
-                                  ObtenerDetalleLiquidacionUseCase obtenerDetalleUseCase,
-                                  BuscarLiquidacionesUseCase buscarUseCase) {
+    public LiquidacionController(
+            ListarLiquidacionesUseCase listarUseCase,
+            ObtenerDetalleLiquidacionUseCase obtenerDetalleUseCase,
+            BuscarLiquidacionesUseCase buscarUseCase) {
+
         this.listarUseCase = listarUseCase;
         this.obtenerDetalleUseCase = obtenerDetalleUseCase;
         this.buscarUseCase = buscarUseCase;
@@ -44,9 +46,11 @@ public class LiquidacionController {
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
+
         Pageable pageable = PageRequest.of(page, size, sort);
 
         UsuarioAutenticado usuario = UsuarioAutenticado.from(authentication);
+
         return ResponseEntity.ok(listarUseCase.ejecutar(pageable, usuario));
     }
 

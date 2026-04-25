@@ -4,7 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @Configuration
-@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
+@EnableSpringDataWebSupport
 public class PaginationConfig {
-    // Paginacion por defecto: page=0, size=10, sort=fechaCalculo DESC (configurado en el controlador)
+    // La propiedad pageSerializationMode solo está disponible a partir de Spring Boot 3.3+ (Spring Data 3.3+)
+    // Como el proyecto usa Spring Boot 3.2.4, se utiliza la configuración por defecto.
 }
