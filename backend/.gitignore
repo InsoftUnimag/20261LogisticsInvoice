@@ -1,0 +1,31 @@
+# ====== Gradle ======
+.gradle/
+build/
+
+# Archivos generados por Gradle
+*.bin
+*.lock
+
+# Wrapper (ESTO SÍ se sube parcialmente)
+!gradle/wrapper/gradle-wrapper.jar
+
+# ====== IntelliJ IDEA ======
+.idea/
+*.iml
+out/
+
+# ====== Logs ======
+*.log
+
+# ====== Sistema ======
+.DS_Store
+Thumbs.db
+
+# ====== Java ======
+*.class
+
+# ====== Variables de entorno ======
+.env
+
+# ====== Docker ======
+docker-compose.override.yml
